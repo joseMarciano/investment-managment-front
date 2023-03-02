@@ -17,7 +17,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      {/* <Menu /> */}
+       <Menu /> 
       <Carteiras/>
     </ChakraProvider>
   </React.StrictMode>
