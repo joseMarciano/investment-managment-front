@@ -2,6 +2,7 @@ import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
 import { Menu } from './components/menu/Menu';
+import { Carteiras } from './components/menu/Carteiras/carteiras';
 
 /**
  * Styles
@@ -16,7 +17,8 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <Menu />
+      {/* <Menu /> */}
+      <Carteiras/>
     </ChakraProvider>
   </React.StrictMode>
 );
