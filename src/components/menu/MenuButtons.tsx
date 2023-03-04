@@ -1,6 +1,7 @@
 import { Box, Button, Icon } from "@chakra-ui/react"
 import { GiHamburgerMenu } from "react-icons/gi"
 import { useMenuContext } from "../../context/MenuContext"
+import { Link } from "react-router-dom"
 
 
 export function MenuButtons() {
@@ -14,9 +15,11 @@ export function MenuButtons() {
     function CompleteMenuButtons() {
         return <>
             {MENU_BUTTONS.map(button => (<Box key={button.key} color={getColor(button.key)} >
-                <Button leftIcon={<button.icon />} alignSelf={'flex-start'} variant={"unstyled"} border={"none"} size="md" bg="none" onClick={button.onClick.bind(button)}>
-                    {button.description}
-                </Button>
+                <Link key={button.key} to={button.route}>
+                    <Button leftIcon={<button.icon />} alignSelf={'flex-start'} variant={"unstyled"} border={"none"} size="md" bg="none" onClick={button.onClick.bind(button)}>
+                        {button.description}
+                    </Button>
+                </Link>
             </Box>))}
         </>
     }
@@ -26,9 +29,12 @@ export function MenuButtons() {
             <Button variant={"unstyled"} border={"none"} size="md" bg="none" onClick={sideBarDisclosure.onOpen}>
                 <Icon as={GiHamburgerMenu} />
             </Button>
-            {MENU_BUTTONS.map(button => (<Button key={button.key} color={getColor(button.key)} variant={"unstyled"} border={"none"} size="md" bg="none" onClick={button.onClick.bind(button)}>
-                <Icon as={button.icon} />
-            </Button>))}
+            {MENU_BUTTONS.map(button => (
+                <Link key={button.key} to={button.route}>
+                    <Button color={getColor(button.key)} variant={"unstyled"} border={"none"} size="md" bg="none" onClick={button.onClick.bind(button)}>
+                        <Icon as={button.icon} />
+                    </Button>
+                </Link>))}
         </>;
     }
 
