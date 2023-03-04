@@ -23,7 +23,8 @@ export function Menu() {
         useEffect(() => {
             if (isLarge) sideBarDisclosure.onOpen && sideBarDisclosure.onOpen();
             else sideBarDisclosure.onClose && sideBarDisclosure.onClose()
-
+            
+            // eslint-disable-next-line
         }, [isLarge])
 
         return <>
