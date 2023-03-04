@@ -1,4 +1,4 @@
-import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, UseDisclosureProps, VStack } from "@chakra-ui/react"
+import { Box, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, Heading, UseDisclosureProps, VStack } from "@chakra-ui/react"
 import { DEFAULT_STYLES } from "../../config/styles/theme";
 import { MenuButtons } from "./MenuButtons";
 import { MenuContextProvider, useMenuContext } from "../../context/MenuContext";
@@ -28,7 +28,8 @@ export function Menu() {
 
         return <>
             {(!isLarge) && !sideBarDisclosure.isOpen && <SmallMenu />}
-            {((!isLarge && sideBarDisclosure.isOpen) || (isLarge)) && <BigMenu sideBarDisclosure={sideBarDisclosure} responsiveStatus={{ isLarge, isMedium, isSmall }} />}
+            {isLarge && <BigMenu />}
+            {((!isLarge && sideBarDisclosure.isOpen) || (isMedium)) && <BigResponsiveMenu sideBarDisclosure={sideBarDisclosure} responsiveStatus={{ isLarge, isMedium, isSmall }} />}
         </>
     }
 
@@ -38,7 +39,22 @@ export function Menu() {
         </VStack>
     }
 
-    function BigMenu({ sideBarDisclosure, responsiveStatus: { isLarge } }: BigMenuProps) {
+    function BigMenu() {
+
+
+        return <VStack height={'100vh'} w={'320px'} justifyContent={'flex-start'} >
+            <Heading width={'100%'} fontSize={20} p={'16px'} textAlign={'start'}>
+                Menu
+            </Heading>
+            <Box>
+                <VStack alignItems={'flex-start'} gap={2}>
+                    <MenuButtons />
+                </VStack>
+            </Box>
+        </VStack>
+    }
+
+    function BigResponsiveMenu({ sideBarDisclosure, responsiveStatus: { isLarge } }: BigMenuProps) {
         return <Drawer
             isOpen={!!sideBarDisclosure.isOpen}
             placement='left'
@@ -46,8 +62,8 @@ export function Menu() {
             size={'xs'}
             closeOnEsc={!isLarge}
             closeOnOverlayClick={!isLarge}
+
         >
-           {!isLarge && <DrawerOverlay />}
             <DrawerContent bgColor={DEFAULT_STYLES.styles.global.body.bg}>
                 {!isLarge && < DrawerCloseButton />}
                 <DrawerHeader>Menu</DrawerHeader>
