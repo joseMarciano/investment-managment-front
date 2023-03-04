@@ -2,7 +2,7 @@ import { RouteObject } from "react-router-dom";
 
 
 const router: RouteObject = {
-    path: '/wallets',
+    path: '/wallet',
     element: <h1>COLOCAR COMPONENTE DE WALLET AQUI</h1>
 }
 
