@@ -1,5 +1,5 @@
 import { useDisclosure, UseDisclosureProps } from "@chakra-ui/react"
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { createContext, ReactNode, useContext, useState } from "react"
 import { IconType } from "react-icons"
 import { AiOutlineEye } from "react-icons/ai"
 import { BsNewspaper, BsWallet2 } from "react-icons/bs"
@@ -20,8 +20,9 @@ type MenuContextProps = {
 
 export type MenuButton = {
     key: string,
-    description: string
+    description: string,
     icon: IconType,
+    route: string
     onClick: (param: any) => void
 }
 
@@ -47,6 +48,7 @@ export function MenuContextProvider({ children }: MenuContextProviderProps) {
                 key: 'WALLETS',
                 description: "Wallets",
                 icon: BsWallet2,
+                route: '/wallet',
                 onClick: function () {
                     setSelectedButton(this.key);
                 }
@@ -55,6 +57,7 @@ export function MenuContextProvider({ children }: MenuContextProviderProps) {
                 key: 'STOCK_RADAR',
                 description: "Radar de ativos",
                 icon: AiOutlineEye,
+                route: '/',
                 onClick: function () {
                     setSelectedButton(this.key);
                 }
@@ -63,6 +66,7 @@ export function MenuContextProvider({ children }: MenuContextProviderProps) {
                 key: 'NEWS',
                 description: "Notícias",
                 icon: BsNewspaper,
+                route: '/',
                 onClick: function () {
                     setSelectedButton(this.key);
                 }
@@ -71,6 +75,7 @@ export function MenuContextProvider({ children }: MenuContextProviderProps) {
                 key: 'SETTINGS',
                 description: "Configurações",
                 icon: FiSettings,
+                route: '/',
                 onClick: function () {
                     setSelectedButton(this.key);
                 }
