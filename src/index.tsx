@@ -1,13 +1,13 @@
 import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
-import { Menu } from './components/menu/Menu';
 
 /**
  * Styles
  */
 import { theme } from './config/styles/theme';
 import '@fontsource/nunito'
+import { Root } from './routes/Root';
 
 
 const root = ReactDOM.createRoot(
@@ -16,7 +16,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <Menu />
+      <Root />
     </ChakraProvider>
   </React.StrictMode>
 );
