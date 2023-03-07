@@ -1,8 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect } from "react"
 import { useLocation, useNavigate } from 'react-router-dom';
+import { UseResponsiveStatus, useResponsiveStatus } from '../hooks/useResponsiveStatus';
 
 
-type ApplicationContextProps = {};
+type ApplicationContextProps = {
+    responsiveStatus: UseResponsiveStatus
+};
 type ApplicationContextProviderProps = {
     children: ReactNode
 };
@@ -12,6 +15,7 @@ const ApplicationContext = createContext({} as ApplicationContextProps)
 export function ApplicationContextProvider({ children }: ApplicationContextProviderProps) {
     const location = useLocation();
     const navigate = useNavigate();
+    const responsiveStatus = useResponsiveStatus();
 
     useEffect(() => {
         if (isInRootRoute()) navigate('/wallet')
@@ -19,7 +23,7 @@ export function ApplicationContextProvider({ children }: ApplicationContextProvi
     }, [])
 
     return (
-        <ApplicationContext.Provider value={{}}>
+        <ApplicationContext.Provider value={{responsiveStatus}}>
             {children}
         </ApplicationContext.Provider>
     )

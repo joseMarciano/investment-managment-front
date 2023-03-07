@@ -4,7 +4,8 @@ import { IconType } from "react-icons"
 import { AiOutlineEye } from "react-icons/ai"
 import { BsNewspaper, BsWallet2 } from "react-icons/bs"
 import { FiSettings } from "react-icons/fi"
-import { UseResponsiveStatus, useResponsiveStatus } from "../hooks/useResponsiveStatus"
+import { UseResponsiveStatus } from "../hooks/useResponsiveStatus"
+import { useApplicationContext } from './ApplicationContext'
 
 type MenuContextProviderProps = {
     children: ReactNode
@@ -29,7 +30,7 @@ export type MenuButton = {
 const MenuContext = createContext({} as MenuContextProps)
 
 export function MenuContextProvider({ children }: MenuContextProviderProps) {
-    const responsiveStatus = useResponsiveStatus();
+    const { responsiveStatus } = useApplicationContext();
     const sideBarDisclosure = useDisclosure({ id: 'Menu-Side-Bar', defaultIsOpen: responsiveStatus.isLarge });
     const MENU_BUTTONS = initializeMenuButtons();
     const [selectedButton, setSelectedButton] = useState(MENU_BUTTONS[0].key);
