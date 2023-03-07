@@ -7,7 +7,6 @@ import { useApplicationContext } from '../../context/ApplicationContext';
 
 export function ExecutionPage() {
     const { responsiveStatus: { isLarge } } = useApplicationContext()
-    debugger
     return <Box>
         <TitlePage title='Execuções' />
         <VStack p={isLarge ? 4 : 2} gap={isLarge ? 5 : 1}>
