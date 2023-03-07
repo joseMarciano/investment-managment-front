@@ -45,7 +45,7 @@ export function MenuContextProvider({ children }: MenuContextProviderProps) {
         return [
             {
                 key: 'WALLETS',
-                description: "Wallets",
+                description: "Carteiras",
                 icon: BsWallet2,
                 onClick: function () {
                     setSelectedButton(this.key);
