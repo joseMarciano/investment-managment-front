@@ -1,13 +1,11 @@
 import { FaSearch } from 'react-icons/fa';
 import { TbRefresh } from 'react-icons/tb';
-import { Box, Button, Heading, HStack, Input, InputGroup, InputLeftElement, InputRightElement, VStack } from '@chakra-ui/react';
-import { useResponsiveStatus } from '../../../hooks/useResponsiveStatus';
+import { Box, Button, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
 
-type SearchCommonsProps = {}
 
-export function SearchCommons({ }: SearchCommonsProps) {
+export function SearchCommons() {
 
-    return <Box width='100%' display={'flex'} gap={2}>
+    return <Box maxWidth='600px' width='100%' display={'flex'} alignSelf='center' gap={2}>
         <Button colorScheme={'blue'}>
             <TbRefresh />
         </Button>
