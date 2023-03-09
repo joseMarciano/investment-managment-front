@@ -1,6 +1,6 @@
 import { Box, Button, Icon } from "@chakra-ui/react"
 import { GiHamburgerMenu } from "react-icons/gi"
-import { useMenuContext } from "../../context/MenuContext"
+import { useMenuContext } from "./context/MenuContext"
 import { Link } from "react-router-dom"
 
 

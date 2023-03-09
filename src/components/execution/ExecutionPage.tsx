@@ -2,8 +2,8 @@ import { Box, Button, VStack } from '@chakra-ui/react';
 import { SearchCommons } from '../commons/search/SearchCommons';
 import { TitlePage } from '../commons/title-page/TitlePage';
 import { ExecutionItem } from './ExecutionItem';
-import { useApplicationContext } from '../../context/ApplicationContext';
-import { useExecutionContext } from '../../context/ExecutionContext';
+import { useApplicationContext } from '../commons/application/context/ApplicationContext';
+import { useExecutionContext } from './context/ExecutionContext';
 import { CardEmptyList } from '../commons/card-empty-list/CardEmptyList';
 
 export function ExecutionPage() {

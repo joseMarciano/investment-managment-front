@@ -1,8 +1,8 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useParams } from 'react-router-dom';
-import { Loader } from '../components/commons/loader/Loader';
-import { ExecutionAggregateType } from '../model-types/ExecutionTypes';
-import { useApplicationContext } from './ApplicationContext';
+import { Loader } from '../../commons/loader/Loader';
+import { ExecutionAggregateType } from '../../../model-types/ExecutionTypes';
+import { useApplicationContext } from '../../commons/application/context/ApplicationContext';
 
 type ExecutionContextProps = {
     executionsSummary: ExecutionAggregateType[],

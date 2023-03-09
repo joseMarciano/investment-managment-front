@@ -1,7 +1,7 @@
 import { Box, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, Heading, UseDisclosureProps, VStack } from "@chakra-ui/react"
 import { DEFAULT_STYLES } from "../../config/styles/theme";
 import { MenuButtons } from "./MenuButtons";
-import { MenuContextProvider, useMenuContext } from "../../context/MenuContext";
+import { MenuContextProvider, useMenuContext } from "./context/MenuContext";
 import { useEffect } from "react";
 import { UseResponsiveStatus } from "../../hooks/useResponsiveStatus";
 

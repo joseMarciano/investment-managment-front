@@ -1,7 +1,7 @@
 import { Box, HStack } from "@chakra-ui/react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { Menu } from "../components/menu/Menu";
-import { ApplicationContextProvider } from "../context/ApplicationContext";
+import { ApplicationContextProvider } from "../components/commons/application/context/ApplicationContext";
 
 /**
  * ROUTES

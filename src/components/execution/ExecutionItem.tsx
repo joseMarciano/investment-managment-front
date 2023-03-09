@@ -1,6 +1,6 @@
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons'
 import { Box, HStack, Text } from '@chakra-ui/react'
-import { useApplicationContext } from '../../context/ApplicationContext';
+import { useApplicationContext } from '../commons/application/context/ApplicationContext';
 import { ExecutionAggregateType } from '../../model-types/ExecutionTypes';
 import { MoneyFormatter } from '../../utils/MoneyFormatter';
 

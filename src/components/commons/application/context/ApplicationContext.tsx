@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo } from "react"
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UseResponsiveStatus, useResponsiveStatus } from '../hooks/useResponsiveStatus';
-import httpClient from '../config/http/axios';
+import { UseResponsiveStatus, useResponsiveStatus } from '../../../../hooks/useResponsiveStatus';
+import httpClient from '../../../../config/http/axios';
 import { AxiosInstance } from 'axios';
 import { Spinner } from '@chakra-ui/react';
 

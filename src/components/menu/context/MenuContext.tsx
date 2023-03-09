@@ -4,8 +4,8 @@ import { IconType } from "react-icons"
 import { AiOutlineEye } from "react-icons/ai"
 import { BsNewspaper, BsWallet2 } from "react-icons/bs"
 import { FiSettings } from "react-icons/fi"
-import { UseResponsiveStatus } from "../hooks/useResponsiveStatus"
-import { useApplicationContext } from './ApplicationContext'
+import { UseResponsiveStatus } from "../../../hooks/useResponsiveStatus"
+import { useApplicationContext } from '../../commons/application/context/ApplicationContext'
 
 type MenuContextProviderProps = {
     children: ReactNode
