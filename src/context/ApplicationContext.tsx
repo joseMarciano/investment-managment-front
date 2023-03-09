@@ -1,10 +1,13 @@
-import { createContext, ReactNode, useContext, useEffect } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo } from "react"
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UseResponsiveStatus, useResponsiveStatus } from '../hooks/useResponsiveStatus';
-
+import httpClient from '../config/http/axios';
+import { AxiosInstance } from 'axios';
+import { Spinner } from '@chakra-ui/react';
 
 type ApplicationContextProps = {
-    responsiveStatus: UseResponsiveStatus
+    responsiveStatus: UseResponsiveStatus,
+    http: AxiosInstance
 };
 type ApplicationContextProviderProps = {
     children: ReactNode
@@ -16,6 +19,7 @@ export function ApplicationContextProvider({ children }: ApplicationContextProvi
     const location = useLocation();
     const navigate = useNavigate();
     const responsiveStatus = useResponsiveStatus();
+    const http = useMemo(() => httpClient, []);
 
     useEffect(() => {
         if (isInRootRoute()) navigate('/wallet')
@@ -23,7 +27,7 @@ export function ApplicationContextProvider({ children }: ApplicationContextProvi
     }, [])
 
     return (
-        <ApplicationContext.Provider value={{responsiveStatus}}>
+        <ApplicationContext.Provider value={{ responsiveStatus, http }}>
             {children}
         </ApplicationContext.Provider>
     )
