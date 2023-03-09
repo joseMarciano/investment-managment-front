@@ -5,7 +5,9 @@ import { ExecutionAggregateType } from '../model-types/ExecutionTypes';
 import { useApplicationContext } from './ApplicationContext';
 
 type ExecutionContextProps = {
-    executionsSummary: ExecutionAggregateType[]
+    executionsSummary: ExecutionAggregateType[],
+    getExecutionsSummary: () => Promise<ExecutionAggregateType[]>,
+    isLoading: boolean
 };
 
 type ExecutionContextProviderProps = {
@@ -21,15 +23,16 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
     const [executionsSummary, setExecutionsSummary] = useState<ExecutionAggregateType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const getExecutionsSummary = async () => {
+    const getExecutionsSummary = async (): Promise<ExecutionAggregateType[]> => {
         try {
             setIsLoading(true);
             const { data } = await http.get<ExecutionAggregateType[]>(baseUrl);
             return data || [];
         } catch (error) {
             console.error('Error on fetch executions summary', error);
+            return [];
         }
-        finally{
+        finally {
             setIsLoading(false);
         }
     }
@@ -44,7 +47,7 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
 
 
     return (
-        <ExecutionContext.Provider value={{ executionsSummary }}>
+        <ExecutionContext.Provider value={{ executionsSummary, isLoading, getExecutionsSummary }}>
             {children}
             <Loader isLoading={isLoading} />
         </ExecutionContext.Provider>

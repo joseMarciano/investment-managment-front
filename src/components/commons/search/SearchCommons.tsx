@@ -2,11 +2,15 @@ import { FaSearch } from 'react-icons/fa';
 import { TbRefresh } from 'react-icons/tb';
 import { Box, Button, Input, InputGroup, InputRightElement } from '@chakra-ui/react';
 
+type SearchCommonsProps = {
+    isLoading: boolean,
+    onClickRefresh: (params: any) => any
+}
 
-export function SearchCommons() {
+export function SearchCommons({ isLoading, onClickRefresh }: SearchCommonsProps) {
 
     return <Box maxWidth='600px' width='100%' display={'flex'} alignSelf='center' gap={2}>
-        <Button colorScheme={'blue'}>
+        <Button isLoading={isLoading} onClick={onClickRefresh} colorScheme={'blue'}>
             <TbRefresh />
         </Button>
         <InputGroup>

@@ -8,17 +8,17 @@ import { CardEmptyList } from '../commons/card-empty-list/CardEmptyList';
 
 export function ExecutionPage() {
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { executionsSummary } = useExecutionContext();
+    const { executionsSummary, isLoading, getExecutionsSummary } = useExecutionContext();
 
     return <Box>
         <TitlePage title='Execuções' />
         <VStack p={isLarge ? 4 : 2} gap={isLarge ? 5 : 1}>
             <Box width={'100%'} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} gap={2}>
-                <Button colorScheme={'green'}>Adicionar</Button>
-                <SearchCommons />
+                <Button isLoading={isLoading} colorScheme={'green'}>Adicionar</Button>
+                <SearchCommons isLoading={isLoading} onClickRefresh={getExecutionsSummary} />
             </Box>
             <Box width='100%'>
-                {(!executionsSummary || !executionsSummary.length ) && <CardEmptyList model='Execuções' />}
+                {(!executionsSummary || !executionsSummary.length) && <CardEmptyList model='Execuções' />}
                 {executionsSummary.map((it) => <ExecutionItem key={it.stockId} executionAggregate={it} />)}
             </Box>
         </VStack>
