@@ -6,7 +6,7 @@ import { useApplicationContext } from '../commons/application/context/Applicatio
 import { useExecutionContext } from './context/ExecutionContext';
 import { CardEmptyList } from '../commons/card-empty-list/CardEmptyList';
 
-export function ExecutionPage() {
+export function ExecutionSummaryPage() {
     const { responsiveStatus: { isLarge } } = useApplicationContext();
     const { executionsSummary, isLoading, search, modalDisclosure } = useExecutionContext();
 
