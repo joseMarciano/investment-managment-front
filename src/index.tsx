@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client';
 /**
  * Styles
  */
+import './config/styles/select-option-style.css';
 import { theme } from './config/styles/theme';
 import '@fontsource/nunito'
 import { Root } from './routes/Root';

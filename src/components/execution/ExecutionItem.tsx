@@ -16,8 +16,7 @@ type CurrentValueProps = {
 export function ExecutionItem({ executionAggregate }: ExecutionItemProps) {
     const { responsiveStatus: { isLarge } } = useApplicationContext()
 
- 
-    return <Box mt={2} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} fontSize='sm' fontWeight='medium' borderRadius={8} p={3} bgColor={'gray.700'}>
+    return <Box cursor={'pointer'} mt={2} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} fontSize='sm' fontWeight='medium' borderRadius={8} p={3} bgColor={'gray.700'}>
         <HStack width={isLarge ? '25%' : '100%'} justify={isLarge ? '' : 'space-between'} align='center'>
             <Text fontWeight='bold' >{executionAggregate.symbol}</Text>
             <Text> {executionAggregate.totalCustodyQuantity} cotas</Text>

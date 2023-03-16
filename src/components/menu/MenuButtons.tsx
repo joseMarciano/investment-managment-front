@@ -14,7 +14,7 @@ export function MenuButtons() {
 
     function CompleteMenuButtons() {
         return <>
-            {MENU_BUTTONS.map(button => (<Box key={button.key} color={getColor(button.key)} >
+            {MENU_BUTTONS.map(button => (<Box  key={button.key} color={getColor(button.key)} >
                 <Link key={button.key} to={button.route}>
                     <Button leftIcon={<button.icon />} alignSelf={'flex-start'} variant={"unstyled"} border={"none"} size="md" bg="none" onClick={button.onClick.bind(button)}>
                         {button.description}

@@ -22,7 +22,7 @@ function Main() {
     return <ApplicationContextProvider>
         <HStack >
             <Menu />
-            <Box height={'100vh'} flex={'1'} m={'0'}> <Outlet /></Box>,
+            <Box padding='0 16px' height={'100vh'} flex={'1'} m={'0'}> <Outlet /></Box>,
         </HStack>
     </ApplicationContextProvider>
 }

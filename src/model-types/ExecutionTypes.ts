@@ -1,6 +1,6 @@
 
 export type ExecutionAggregateType = {
     stockId: string,
-    symbol: string, 
+    symbol: string,
     totalCustodyQuantity: number
 }

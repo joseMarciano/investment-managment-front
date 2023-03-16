@@ -43,11 +43,11 @@ export function Menu() {
     function BigMenu() {
 
 
-        return <VStack height={'100vh'} w={'320px'} justifyContent={'flex-start'} >
-            <Heading width={'100%'} fontSize={20} p={'16px'} textAlign={'start'}>
+        return <VStack  height={'100vh'} w={'250px'} justifyContent={'flex-start'} >
+            <Heading p={'16px'} width={'100%'} fontSize={20}  textAlign={'start'}>
                 Menu
             </Heading>
-            <Box>
+            <Box pl='16px' alignSelf='flex-start'>
                 <VStack alignItems={'flex-start'} gap={2}>
                     <MenuButtons />
                 </VStack>
