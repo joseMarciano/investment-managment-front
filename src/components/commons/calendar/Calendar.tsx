@@ -51,6 +51,6 @@ export function Calendar({ executedAt, setExecutedAt, isDisabled }: CalendarProp
         disabled={isDisabled}
         name="date-input"
         date={executedAt}
-        onDateChange={(date) => { debugger; setExecutedAt(date)}}
+        onDateChange={(date) => { setExecutedAt(date)}}
     />
 }
