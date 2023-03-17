@@ -21,10 +21,14 @@ type ExecutionRowProps = {
     execution: ExecutionPageItem
 }
 
+type MenuRowProps = {
+    execution: ExecutionPageItem
+}
+
 export function ExecutionPage() {
     const { symbol } = useParams();
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { isLoading, searchExecutions, executions, modalDisclosure } = useExecutionContext();
+    const { isLoading, searchExecutions, deleteExecution, executions, modalDisclosure } = useExecutionContext();
 
     return <Box>
         <TitlePage title={`Execuções de ${symbol}`} />
@@ -35,7 +39,7 @@ export function ExecutionPage() {
             </Box>
             <Box textAlign='center' width='100%' >
                 {!executions?.length && <CardEmptyList model='Execuções' />}
-                {executions && executions.length && <TableContainer>
+                {!!executions?.length && <TableContainer>
                     <Table>
                         <TableCaption>Dados de execuções de {symbol}</TableCaption>
                         <Thead>
@@ -68,28 +72,33 @@ export function ExecutionPage() {
 
         return <Tr>
             <TdItem value={execution.status} />
-            <TdItem value={MoneyFormatter.shortBRL(9)} /> 
+            <TdItem value={MoneyFormatter.shortBRL(9)} />
             <TdItem value={MoneyFormatter.shortBRL(4)} />
             <TdItem value={execution.executedQuantity} />
             <TdItem value={execution.profitPercentage} />
             <TdItem value={DateFormatter.format(execution.executedAt)} />
-            <Td textAlign='center'><MenuRow /></Td>
+            <Td textAlign='center'><MenuRow execution={execution} /></Td>
         </Tr>
     }
 
-    function MenuRow() {
+    function MenuRow({ execution }: MenuRowProps) {
         const menu = useMemo(() => [
             {
                 label: 'Vender',
-                icon: BsCurrencyExchange
+                icon: BsCurrencyExchange,
+                onClick: () => { }
             },
             {
                 label: 'Editar',
-                icon: AiOutlineEdit
+                icon: AiOutlineEdit,
+                onClick: () => { }
             },
             {
                 label: 'Excluir',
-                icon: MdDeleteForever
+                icon: MdDeleteForever,
+                onClick: () => { 
+                    deleteExecution(execution.id);
+                }
             },
         ], [])
 
@@ -103,10 +112,10 @@ export function ExecutionPage() {
                 variant='unstyled'
             />
             <MenuList bg={DEFAULT_STYLES.styles.global.body.bg}>
-            {menu.map((it) =>  <MenuItem key={it.label} _hover={{ filter: 'brightness(135%)' }} bg={'inherit'} icon={<it.icon />}>
+                {menu.map((it) => <MenuItem onClick={it.onClick} key={it.label} _hover={{ filter: 'brightness(135%)' }} bg={'inherit'} icon={<it.icon />}>
                     {it.label}
                 </MenuItem>
-               )}
+                )}
             </MenuList>
         </Menu>
     }

@@ -9,6 +9,7 @@ import http from '../../../config/http/axios';
 type ExecutionContextProps = {
     executions: ExecutionPageItem[],
     searchExecutions: () => Promise<void>,
+    deleteExecution: (executionId: string) => Promise<void>,
     isLoading: boolean,
     modalDisclosure: UseDisclosureReturn
 };
@@ -35,7 +36,7 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
     }, [])
 
     return (
-        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, modalDisclosure }}>
+        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, deleteExecution, modalDisclosure }}>
             {children}
             {modalDisclosure?.isOpen && <ExecutionModal params={{
                 stock: {
@@ -52,6 +53,14 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
         getExecutions()
             .then((data) => setExecutions(data ?? []))
             .catch((e) => console.error('Error on fetch executions', e))
+            .finally(() => setIsLoading(false))
+    }
+
+    async function deleteExecution(executionId: string): Promise<void> {
+        setIsLoading(true);
+        return http.delete(`${baseUrl}/${executionId}`)
+            .then(searchExecutions)
+            .catch((e) => console.error(`Error on delete execution ${executionId}`))
             .finally(() => setIsLoading(false))
     }
 
