@@ -1,14 +1,14 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Loader } from '../../commons/loader/Loader';
-import { ExecutionAggregateType } from '../../../model-types/ExecutionTypes';
+import { ExecutionPagination, ExecutionPageItem } from '../../../model-types/ExecutionTypes';
 import { ExecutionModal } from '../modal/ExecutionModal';
 import { useDisclosure, UseDisclosureReturn } from '@chakra-ui/react';
 import http from '../../../config/http/axios';
 
 type ExecutionContextProps = {
-    executionsSummary: ExecutionAggregateType[],
-    search: () => Promise<void>,
+    executions: ExecutionPageItem[],
+    searchExecutions: () => Promise<void>,
     isLoading: boolean,
     modalDisclosure: UseDisclosureReturn
 };
@@ -21,40 +21,47 @@ const ExecutionContext = createContext({} as ExecutionContextProps)
 
 export function ExecutionContextProvider({ children }: ExecutionContextProviderProps) {
     const { walletId } = useParams();
-    const baseUrl = useMemo(() => `executions/summary/${walletId}`, [walletId]);
-    const [executionsSummary, setExecutionsSummary] = useState<ExecutionAggregateType[]>([]);
+    const { state: { stockId } } = useLocation();
+    const { symbol } = useParams();
+    const baseUrl = useMemo(() => `executions`, []);
+    const [executions, setExecutions] = useState<ExecutionPageItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const modalDisclosure = useDisclosure({ id: 'Execution-Modal' , onClose: () => search()});
+    const modalDisclosure = useDisclosure({ id: 'Execution-Modal', onClose: () => searchExecutions() });
     let currentExecution = null as unknown as string;
 
     useEffect(() => {
-        search();
+        searchExecutions();
     }, [])
 
     return (
-        <ExecutionContext.Provider value={{ executionsSummary, isLoading, search, modalDisclosure }}>
+        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, modalDisclosure }}>
             {children}
-            <ExecutionModal id={useMemo(() => currentExecution, [currentExecution])} disclosure={modalDisclosure} />
+            {modalDisclosure?.isOpen && <ExecutionModal params={{
+                stock: {
+                    value: stockId,
+                    label: symbol
+                }
+            }} disclosure={modalDisclosure} />}
             <Loader isLoading={isLoading} />
         </ExecutionContext.Provider>
     )
 
-    async function search() {
+    async function searchExecutions() {
         setIsLoading(true);
-        getExecutionsSummary()
-            .then((data) => setExecutionsSummary(data ?? []))
-            .catch((e) => console.error('Error on fetch executions summary', e))
+        getExecutions()
+            .then((data) => setExecutions(data ?? []))
+            .catch((e) => console.error('Error on fetch executions', e))
             .finally(() => setIsLoading(false))
     }
 
-    async function getExecutionsSummary(): Promise<ExecutionAggregateType[]> {
+    async function getExecutions(): Promise<ExecutionPageItem[]> {
         try {
             setIsLoading(true);
-            const { data } = await http.get<ExecutionAggregateType[]>(baseUrl);
-            return data || [];
+            const { data } = await http.get<ExecutionPagination>(baseUrl, { params: { walletId, stockId } });
+            return data?.items || [];
         } catch (error) {
-            console.error('Error on fetch executions summary', error);
+            console.error('Error on fetch executions', error);
             return [];
         }
         finally {

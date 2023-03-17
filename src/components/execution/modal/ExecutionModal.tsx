@@ -1,7 +1,7 @@
 import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputRightElement, Stack, UseDisclosureReturn } from '@chakra-ui/react';
 import { TbCurrencyReal } from 'react-icons/tb';
 import { FaPercent } from 'react-icons/fa';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DefaultModal } from '../../commons/modal/DefaultModal';
 import { SelectStock } from '../../commons/select/stock/SelectStock';
 import { Calendar } from '../../commons/calendar/Calendar';
@@ -10,24 +10,24 @@ import http from '../../../config/http/axios'
 import { useParams } from 'react-router-dom';
 
 type ExecutionModalProps = {
-	id?: string,
+	params?: any,
 	disclosure: UseDisclosureReturn
 }
 
-type Inputs = {
-	profitPercentage: number,
-	executedQuantity: number,
-	executedPriceg: number
-};
-
-export function ExecutionModal({ id, disclosure }: ExecutionModalProps) {
-	const title = useMemo(() => `${id ? 'Editando' : 'Adicionando'} execução`, [id])
+export function ExecutionModal({ params, disclosure }: ExecutionModalProps) {
+	const title = useMemo(() => `${params?.id ? 'Editando' : 'Adicionando'} execução`, [params?.id])
 	const { register, handleSubmit, reset } = useForm();
 
 	const { walletId } = useParams();
 	const [stock, setStock] = useState<any>();
 	const [executedAt, setExecutedAt] = useState<Date>(new Date());
 	const [isLoading, setIsLoading] = useState(false);
+
+	useEffect(() =>{
+		if(params?.stock) setStock(params?.stock)
+
+
+	} , [])
 
 	return <DefaultModal
 		title={title}
@@ -43,7 +43,7 @@ export function ExecutionModal({ id, disclosure }: ExecutionModalProps) {
 				<HStack>
 					<FormControl isRequired>
 						<FormLabel>Ticket</FormLabel>
-						<SelectStock setStock={setStock} stock={stock} isDisabled={isLoading} />
+						<SelectStock setStock={setStock} stock={stock} isDisabled={isLoading || params?.stock} />
 					</FormControl>
 
 					<FormControl isRequired>
