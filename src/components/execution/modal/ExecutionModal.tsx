@@ -13,7 +13,7 @@ import { useExecutionSummaryContext } from '../context/ExecutionSummaryContext';
 
 
 export function ExecutionModal() {
-	const { register, handleSubmit, reset } = useForm();
+	const { register, handleSubmit, reset, setValue } = useForm();
 
 	const { searchExecutionSummary } = useExecutionSummaryContext();
 	const { searchExecutions } = useExecutionContext();
@@ -22,7 +22,8 @@ export function ExecutionModal() {
 	const [stock, setStock] = useState<any>();
 	const [executedAt, setExecutedAt] = useState<Date>(new Date());
 	const [isLoading, setIsLoading] = useState(false);
-	const title = useMemo(() => `${executionId ? 'Editando' : 'Adicionando'} execução`, [executionId])
+	const title = useMemo(() =>
+		`${executionId ? 'Editando' : 'Adicionando'} execução`, [executionId])
 
 	const navigate = useNavigate();
 	const disclosure = useDisclosure({
@@ -37,7 +38,13 @@ export function ExecutionModal() {
 
 	useEffect(() => {
 		if (state?.stock) setStock(state.stock)
-
+		if (state?.execution) {
+			const execution = state?.execution;
+			setValue('profitPercentage', execution.profitPercentage)
+			setValue('executedQuantity', execution.executedQuantity)
+			setValue('executedPrice', execution.executedPrice)
+			setExecutedAt(new Date(execution.executedAt))
+		}
 
 	}, [])
 
@@ -105,7 +112,22 @@ export function ExecutionModal() {
 
 	function onSubmit(data: any): any {
 		setIsLoading(true)
-		http.post('/executions', {
+		const promise = executionId ? update(data) : save(data);
+
+		promise.then(resetModal)
+			.catch(e => console.error('Error on create execution', e))
+			.finally(() => setIsLoading(false));
+
+		function resetModal() {
+			disclosure.onClose();
+			reset();
+			setExecutedAt(new Date());
+			setStock(null as any);
+		}
+	}
+
+	function save(data: any) {
+		return http.post('/executions', {
 			stockId: stock.value,
 			walletId: walletId,
 			profitPercentage: data.profitPercentage,
@@ -113,13 +135,17 @@ export function ExecutionModal() {
 			executedPrice: data.executedPrice,
 			executedAt: executedAt
 		})
-			.then(() => {
-				disclosure.onClose();
-				reset();
-				setExecutedAt(new Date());
-				setStock(null as any);
-			})
-			.catch(e => console.error('Error on create execution', e))
-			.finally(() => setIsLoading(false));
+	}
+
+	function update(data: any) {
+		return http.put(`/executions/${executionId}`, {
+			id: executionId,
+			stockId: stock.value,
+			walletId: walletId,
+			profitPercentage: data.profitPercentage,
+			executedQuantity: data.executedQuantity,
+			executedPrice: data.executedPrice,
+			executedAt: executedAt
+		})
 	}
 }

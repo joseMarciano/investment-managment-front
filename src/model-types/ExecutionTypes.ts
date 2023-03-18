@@ -26,3 +26,18 @@ export type ExecutionPageItem = {
     createdAt: string,
     updatedAt: string
 }
+
+export type Execution = {
+    id: string,
+    originId: string,
+    stockId: string,
+    walletId: string,
+    profitPercentage: number,
+    executedQuantity: number,
+    executedPrice: number,
+    executedVolume: number,
+    status: string,
+    executedAt: string,
+    createdAt: string,
+    updatedAt: string
+}

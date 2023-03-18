@@ -1,14 +1,12 @@
 import { Box, Button, IconButton, Menu, MenuButton, MenuItem, MenuList, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr, VStack } from '@chakra-ui/react';
 import { SearchCommons } from '../commons/search/SearchCommons';
 import { TitlePage } from '../commons/title-page/TitlePage';
-// import { ExecutionItem } from './ExecutionSummaryItem';
 import { useApplicationContext } from '../commons/application/context/ApplicationContext';
 import { useExecutionContext } from './context/ExecutionContext';
 import { CardEmptyList } from '../commons/card-empty-list/CardEmptyList';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ExecutionPageItem } from '../../model-types/ExecutionTypes';
 import { DateFormatter } from '../../utils/DateFormatter';
-import { AddIcon, EditIcon, ExternalLinkIcon, RepeatIcon } from '@chakra-ui/icons';
 import { BsCurrencyExchange } from 'react-icons/bs';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { HiDotsVertical } from 'react-icons/hi'
@@ -27,11 +25,12 @@ type MenuRowProps = {
 
 export function ExecutionPage() {
     const { state } = useLocation();
+    const navigate = useNavigate();
     const { stockId } = useParams();
     const symbol = useMemo(() => state?.symbol, [])
 
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { isLoading, searchExecutions, deleteExecution, executions } = useExecutionContext();
+    const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions } = useExecutionContext();
 
     return <Box>
         <TitlePage title={`Execuções de ${symbol}`} />
@@ -97,7 +96,15 @@ export function ExecutionPage() {
             {
                 label: 'Editar',
                 icon: AiOutlineEdit,
-                onClick: () => {
+                onClick: async () => {
+                    navigate(`edit/${execution.id}`, {state: {
+                        execution: await findExecutionById(execution.id),
+                        modalIsOpen: true,
+                        stock: {
+                            value: stockId,
+                            label: symbol
+                        }
+                    }})
                 }
             },
             {
