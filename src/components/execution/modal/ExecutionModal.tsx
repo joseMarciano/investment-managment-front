@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputRightElement, Stack, UseDisclosureReturn } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, HStack, Input, InputGroup, InputRightElement, Stack, useDisclosure, UseDisclosureReturn } from '@chakra-ui/react';
 import { TbCurrencyReal } from 'react-icons/tb';
 import { FaPercent } from 'react-icons/fa';
 import { useEffect, useMemo, useState } from 'react';
@@ -7,27 +7,39 @@ import { SelectStock } from '../../commons/select/stock/SelectStock';
 import { Calendar } from '../../commons/calendar/Calendar';
 import { useForm } from "react-hook-form";
 import http from '../../../config/http/axios'
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useResolvedPath } from 'react-router-dom';
+import { useExecutionContext } from '../context/ExecutionContext';
+import { useExecutionSummaryContext } from '../context/ExecutionSummaryContext';
 
-type ExecutionModalProps = {
-	params?: any,
-	disclosure: UseDisclosureReturn
-}
 
-export function ExecutionModal({ params, disclosure }: ExecutionModalProps) {
-	const title = useMemo(() => `${params?.id ? 'Editando' : 'Adicionando'} execução`, [params?.id])
+export function ExecutionModal() {
 	const { register, handleSubmit, reset } = useForm();
 
-	const { walletId } = useParams();
+	const { searchExecutionSummary } = useExecutionSummaryContext();
+	const { searchExecutions } = useExecutionContext();
+	const { state } = useLocation();
+	const { executionId, walletId } = useParams();
 	const [stock, setStock] = useState<any>();
 	const [executedAt, setExecutedAt] = useState<Date>(new Date());
 	const [isLoading, setIsLoading] = useState(false);
+	const title = useMemo(() => `${executionId ? 'Editando' : 'Adicionando'} execução`, [executionId])
 
-	useEffect(() =>{
-		if(params?.stock) setStock(params?.stock)
+	const navigate = useNavigate();
+	const disclosure = useDisclosure({
+		defaultIsOpen: !!state?.modalIsOpen,
+		onClose: () => {
+			navigate(-1)
+			searchExecutionSummary && searchExecutionSummary();
+			searchExecutions && searchExecutions();
+		}
+	})
 
 
-	} , [])
+	useEffect(() => {
+		if (state?.stock) setStock(state.stock)
+
+
+	}, [])
 
 	return <DefaultModal
 		title={title}
@@ -43,7 +55,7 @@ export function ExecutionModal({ params, disclosure }: ExecutionModalProps) {
 				<HStack>
 					<FormControl isRequired>
 						<FormLabel>Ticket</FormLabel>
-						<SelectStock setStock={setStock} stock={stock} isDisabled={isLoading || params?.stock} />
+						<SelectStock setStock={setStock} stock={stock} isDisabled={isLoading || state?.stock} />
 					</FormControl>
 
 					<FormControl isRequired>

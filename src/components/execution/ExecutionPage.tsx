@@ -5,7 +5,7 @@ import { TitlePage } from '../commons/title-page/TitlePage';
 import { useApplicationContext } from '../commons/application/context/ApplicationContext';
 import { useExecutionContext } from './context/ExecutionContext';
 import { CardEmptyList } from '../commons/card-empty-list/CardEmptyList';
-import { useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { ExecutionPageItem } from '../../model-types/ExecutionTypes';
 import { DateFormatter } from '../../utils/DateFormatter';
 import { AddIcon, EditIcon, ExternalLinkIcon, RepeatIcon } from '@chakra-ui/icons';
@@ -26,15 +26,21 @@ type MenuRowProps = {
 }
 
 export function ExecutionPage() {
-    const { symbol } = useParams();
+    const { state } = useLocation();
+    const { stockId } = useParams();
+    const symbol = useMemo(() => state?.symbol, [])
+
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { isLoading, searchExecutions, deleteExecution, executions, modalDisclosure } = useExecutionContext();
+    const { isLoading, searchExecutions, deleteExecution, executions } = useExecutionContext();
 
     return <Box>
         <TitlePage title={`Execuções de ${symbol}`} />
         <VStack p={isLarge ? 4 : 2} gap={isLarge ? 5 : 1}>
             <Box width={'100%'} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} gap={2}>
-                <Button onClick={modalDisclosure.onOpen} isLoading={isLoading} colorScheme={'green'}>Adicionar</Button>
+                <Link to={'add'} state={{ modalIsOpen: true, stock: {
+                    label: symbol,
+                    value: stockId
+                } }}><Button isLoading={isLoading} colorScheme={'green'}>Adicionar</Button></Link>
                 <SearchCommons isLoading={isLoading} onClickRefresh={searchExecutions} />
             </Box>
             <Box textAlign='center' width='100%' >
@@ -91,12 +97,13 @@ export function ExecutionPage() {
             {
                 label: 'Editar',
                 icon: AiOutlineEdit,
-                onClick: () => { }
+                onClick: () => {
+                }
             },
             {
                 label: 'Excluir',
                 icon: MdDeleteForever,
-                onClick: () => { 
+                onClick: () => {
                     deleteExecution(execution.id);
                 }
             },

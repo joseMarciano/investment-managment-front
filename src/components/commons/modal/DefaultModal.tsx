@@ -11,8 +11,6 @@ export type DefaultModalProps = {
 }
 
 export function DefaultModal({ title, Body, Footer, size, disclosure }: DefaultModalProps) {
-   
-
     return <Modal isOpen={disclosure.isOpen || false} isCentered closeOnOverlayClick={false} onClose={onClose} size={size || 'md'}>
         <ModalOverlay
             backdropFilter='auto'

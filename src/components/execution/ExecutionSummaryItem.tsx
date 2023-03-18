@@ -18,7 +18,7 @@ export function ExecutionSummaryItem({ executionAggregate }: ExecutionSummaryIte
     const { responsiveStatus: { isLarge } } = useApplicationContext()
     const { walletId } = useParams();
 
-    return <Link to={`/executions/${walletId}/${executionAggregate.symbol}`} state={{stockId: executionAggregate.stockId}}>
+    return <Link to={`/executions/${walletId}/${executionAggregate.stockId}`} state={{symbol: executionAggregate.symbol}}>
         <Box _hover={{ filter: 'brightness(135%)' }} cursor={'pointer'} mt={2} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} fontSize='sm' fontWeight='medium' borderRadius={8} p={3} bgColor={'gray.700'}>
             <HStack width={isLarge ? '25%' : '100%'} justify={isLarge ? '' : 'space-between'} align='center'>
                 <Text fontWeight='bold' >{executionAggregate.symbol}</Text>

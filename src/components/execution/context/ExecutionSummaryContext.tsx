@@ -9,8 +9,7 @@ import http from '../../../config/http/axios';
 type ExecutionSummaryContextProps = {
     executionsSummary: ExecutionAggregateType[],
     searchExecutionSummary: () => Promise<void>,
-    isLoading: boolean,
-    modalDisclosure: UseDisclosureReturn
+    isLoading: boolean
 };
 
 type ExecutionSummaryContextProviderProps = {
@@ -25,16 +24,13 @@ export function ExecutionSummaryContextProvider({ children }: ExecutionSummaryCo
     const [executionsSummary, setExecutionsSummary] = useState<ExecutionAggregateType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const modalDisclosure = useDisclosure({ id: 'Execution-Modal' , onClose: () => searchExecutionSummary()});
-
     useEffect(() => {
         searchExecutionSummary();
     }, [])
 
     return (
-        <ExecutionSummaryContext.Provider value={{ executionsSummary, isLoading, searchExecutionSummary, modalDisclosure }}>
+        <ExecutionSummaryContext.Provider value={{ executionsSummary, isLoading, searchExecutionSummary }}>
             {children}
-            <ExecutionModal disclosure={modalDisclosure} />
             <Loader isLoading={isLoading} />
         </ExecutionSummaryContext.Provider>
     )

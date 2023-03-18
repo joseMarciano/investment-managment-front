@@ -10,8 +10,7 @@ type ExecutionContextProps = {
     executions: ExecutionPageItem[],
     searchExecutions: () => Promise<void>,
     deleteExecution: (executionId: string) => Promise<void>,
-    isLoading: boolean,
-    modalDisclosure: UseDisclosureReturn
+    isLoading: boolean
 };
 
 type ExecutionContextProviderProps = {
@@ -21,29 +20,18 @@ type ExecutionContextProviderProps = {
 const ExecutionContext = createContext({} as ExecutionContextProps)
 
 export function ExecutionContextProvider({ children }: ExecutionContextProviderProps) {
-    const { walletId } = useParams();
-    const { state: { stockId } } = useLocation();
-    const { symbol } = useParams();
+    const { walletId, stockId } = useParams();
     const baseUrl = useMemo(() => `executions`, []);
     const [executions, setExecutions] = useState<ExecutionPageItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-
-    const modalDisclosure = useDisclosure({ id: 'Execution-Modal', onClose: () => searchExecutions() });
-    let currentExecution = null as unknown as string;
 
     useEffect(() => {
         searchExecutions();
     }, [])
 
     return (
-        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, deleteExecution, modalDisclosure }}>
+        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, deleteExecution }}>
             {children}
-            {modalDisclosure?.isOpen && <ExecutionModal params={{
-                stock: {
-                    value: stockId,
-                    label: symbol
-                }
-            }} disclosure={modalDisclosure} />}
             <Loader isLoading={isLoading} />
         </ExecutionContext.Provider>
     )
@@ -60,14 +48,14 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
         setIsLoading(true);
         return http.delete(`${baseUrl}/${executionId}`)
             .then(searchExecutions)
-            .catch((e) => console.error(`Error on delete execution ${executionId}`))
+            .catch((e) => console.error(`Error on delete execution ${executionId}`, e))
             .finally(() => setIsLoading(false))
     }
 
     async function getExecutions(): Promise<ExecutionPageItem[]> {
         try {
             setIsLoading(true);
-            const { data } = await http.get<ExecutionPagination>(baseUrl, { params: { walletId, stockId } });
+            const { data } = await http.get<ExecutionPagination>(baseUrl, { params: { walletId, stockId: stockId } });
             return data?.items || [];
         } catch (error) {
             console.error('Error on fetch executions', error);

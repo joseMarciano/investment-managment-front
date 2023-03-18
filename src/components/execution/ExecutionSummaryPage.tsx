@@ -5,16 +5,17 @@ import { ExecutionSummaryItem } from './ExecutionSummaryItem';
 import { useApplicationContext } from '../commons/application/context/ApplicationContext';
 import { useExecutionSummaryContext } from './context/ExecutionSummaryContext';
 import { CardEmptyList } from '../commons/card-empty-list/CardEmptyList';
+import { Link } from 'react-router-dom';
 
 export function ExecutionSummaryPage() {
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { executionsSummary, isLoading, searchExecutionSummary, modalDisclosure } = useExecutionSummaryContext();
+    const { executionsSummary, isLoading, searchExecutionSummary } = useExecutionSummaryContext();
 
     return <Box>
         <TitlePage title='Execuções' />
         <VStack p={isLarge ? 4 : 2} gap={isLarge ? 5 : 1}>
             <Box width={'100%'} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} gap={2}>
-                <Button onClick={modalDisclosure.onOpen} isLoading={isLoading} colorScheme={'green'}>Adicionar</Button>
+                <Link to={'add'} state={{ modalIsOpen: true }}><Button isLoading={isLoading} colorScheme={'green'}>Adicionar</Button> </Link>
                 <SearchCommons isLoading={isLoading} onClickRefresh={searchExecutionSummary} />
             </Box>
             <Box width='100%' >
