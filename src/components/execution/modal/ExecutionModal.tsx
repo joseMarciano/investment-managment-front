@@ -22,8 +22,13 @@ export function ExecutionModal() {
 	const [stock, setStock] = useState<any>();
 	const [executedAt, setExecutedAt] = useState<Date>(new Date());
 	const [isLoading, setIsLoading] = useState(false);
-	const title = useMemo(() =>
-		`${executionId ? 'Editando' : 'Adicionando'} execução`, [executionId])
+	const title = useMemo(() => {
+		let title;
+		if (state?.isSelling && executionId) title = 'Vendendo';
+		else if (executionId) title = 'Editando';
+		else title = 'Adicionando';
+		return `${title} execução`;
+	}, [])
 
 	const navigate = useNavigate();
 	const disclosure = useDisclosure({
@@ -65,7 +70,7 @@ export function ExecutionModal() {
 						<SelectStock setStock={setStock} stock={stock} isDisabled={isLoading || state?.stock} />
 					</FormControl>
 
-					<FormControl isRequired>
+					{!state?.isSelling && <FormControl isRequired>
 						<FormLabel>Parâmetro de lucro</FormLabel>
 						<InputGroup>
 							<InputRightElement
@@ -75,6 +80,7 @@ export function ExecutionModal() {
 							<Input isDisabled={isLoading} type='number' {...register('profitPercentage')} />
 						</InputGroup>
 					</FormControl>
+					}
 				</HStack>
 
 				<FormControl isRequired>
@@ -105,14 +111,18 @@ export function ExecutionModal() {
 
 	function Footer() {
 		return <HStack>
-			<Button isLoading={isLoading} form='executionModal' type='submit' colorScheme='green'>Salvar</Button>
+			<Button isLoading={isLoading} form='executionModal' type='submit' colorScheme='green'>{state?.isSelling ? 'Vender' : 'Salvar'}</Button>
 			<Button isLoading={isLoading} onClick={disclosure.onClose} colorScheme='red'>Cancelar</Button>
 		</HStack>
 	}
 
 	function onSubmit(data: any): any {
 		setIsLoading(true)
-		const promise = executionId ? update(data) : save(data);
+		let promise;
+
+		if(executionId && state?.isSelling) promise = sell(data); 
+		else if (executionId) promise = update(data);
+		else promise = save(data);
 
 		promise.then(resetModal)
 			.catch(e => console.error('Error on create execution', e))
@@ -143,6 +153,15 @@ export function ExecutionModal() {
 			stockId: stock.value,
 			walletId: walletId,
 			profitPercentage: data.profitPercentage,
+			executedQuantity: data.executedQuantity,
+			executedPrice: data.executedPrice,
+			executedAt: executedAt
+		})
+	}
+
+	function sell(data: any) {
+		return http.put(`/executions/sell/${executionId}`, {
+			originId: executionId,
 			executedQuantity: data.executedQuantity,
 			executedPrice: data.executedPrice,
 			executedAt: executedAt

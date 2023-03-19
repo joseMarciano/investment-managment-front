@@ -91,7 +91,16 @@ export function ExecutionPage() {
             {
                 label: 'Vender',
                 icon: BsCurrencyExchange,
-                onClick: () => { }
+                onClick: () => {
+                    navigate(`sell/${execution.id}`, {state: {
+                        modalIsOpen: true,
+                        isSelling: true,
+                        stock: {
+                            value: stockId,
+                            label: symbol
+                        }
+                    }})
+                 }
             },
             {
                 label: 'Editar',

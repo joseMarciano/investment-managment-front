@@ -3,6 +3,7 @@ import { ExecutionContextProvider } from '../../components/execution/context/Exe
 import { ExecutionPage } from '../../components/execution/ExecutionPage';
 import AddExecutionRouter from '../execution/add/AddExecutionRouter';
 import EditExecutionRouter from '../execution/edit/EditExecutionRouter';
+import SellExecutionRouter from '../execution/sell/SellExecutionRouter';
 
 const router: RouteObject = {
     path: '/executions/:walletId/:stockId',
@@ -10,7 +11,7 @@ const router: RouteObject = {
         <ExecutionPage />
         <Outlet/>
     </ExecutionContextProvider>,
-    children:[AddExecutionRouter, EditExecutionRouter]
+    children:[AddExecutionRouter, EditExecutionRouter, SellExecutionRouter]
 
 }
 
