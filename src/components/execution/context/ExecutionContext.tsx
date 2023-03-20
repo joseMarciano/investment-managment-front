@@ -4,7 +4,7 @@ import { Loader } from '../../commons/loader/Loader';
 import { ExecutionPagination, ExecutionPageItem, Execution } from '../../../model-types/ExecutionTypes';
 import { ExecutionModal } from '../modal/ExecutionModal';
 import { useDisclosure, UseDisclosureReturn } from '@chakra-ui/react';
-import http from '../../../config/http/axios';
+import { useApplicationContext } from '../../commons/application/context/ApplicationContext';
 
 type ExecutionContextProps = {
     executions: ExecutionPageItem[],
@@ -22,6 +22,7 @@ const ExecutionContext = createContext({} as ExecutionContextProps)
 
 export function ExecutionContextProvider({ children }: ExecutionContextProviderProps) {
     const { walletId, stockId } = useParams();
+    const { http } = useApplicationContext();
     const baseUrl = useMemo(() => `executions`, []);
     const [executions, setExecutions] = useState<ExecutionPageItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +32,7 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
     }, [])
 
     return (
-        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, deleteExecution,findExecutionById }}>
+        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, deleteExecution, findExecutionById }}>
             {children}
             <Loader isLoading={isLoading} />
         </ExecutionContext.Provider>

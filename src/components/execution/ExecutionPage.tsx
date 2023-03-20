@@ -89,6 +89,7 @@ export function ExecutionPage() {
     function MenuRow({ execution }: MenuRowProps) {
         const menu = useMemo(() => [
             {
+                key: 'SELL',
                 label: 'Vender',
                 icon: BsCurrencyExchange,
                 onClick: () => {
@@ -103,6 +104,7 @@ export function ExecutionPage() {
                  }
             },
             {
+                key: 'EDIT',
                 label: 'Editar',
                 icon: AiOutlineEdit,
                 onClick: async () => {
@@ -117,6 +119,7 @@ export function ExecutionPage() {
                 }
             },
             {
+                key: 'REMOVE',
                 label: 'Excluir',
                 icon: MdDeleteForever,
                 onClick: () => {
@@ -135,10 +138,14 @@ export function ExecutionPage() {
                 variant='unstyled'
             />
             <MenuList bg={DEFAULT_STYLES.styles.global.body.bg}>
-                {menu.map((it) => <MenuItem onClick={it.onClick} key={it.label} _hover={{ filter: 'brightness(135%)' }} bg={'inherit'} icon={<it.icon />}>
+                {menu.map((it) =>{
+                    if(it.key === 'SELL' && execution.status === 'SELL') return null;
+
+                    return <MenuItem onClick={it.onClick} key={it.key} _hover={{ filter: 'brightness(135%)' }} bg={'inherit'} icon={<it.icon />}>
                     {it.label}
                 </MenuItem>
-                )}
+
+                })}
             </MenuList>
         </Menu>
     }

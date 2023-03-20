@@ -4,7 +4,7 @@ import { Loader } from '../../commons/loader/Loader';
 import { ExecutionAggregateType } from '../../../model-types/ExecutionTypes';
 import { ExecutionModal } from '../modal/ExecutionModal';
 import { useDisclosure, UseDisclosureReturn } from '@chakra-ui/react';
-import http from '../../../config/http/axios';
+import { useApplicationContext } from '../../commons/application/context/ApplicationContext';
 
 type ExecutionSummaryContextProps = {
     executionsSummary: ExecutionAggregateType[],
@@ -20,6 +20,7 @@ const ExecutionSummaryContext = createContext({} as ExecutionSummaryContextProps
 
 export function ExecutionSummaryContextProvider({ children }: ExecutionSummaryContextProviderProps) {
     const { walletId } = useParams();
+    const { http } = useApplicationContext();
     const baseUrl = useMemo(() => `executions/summary/${walletId}`, [walletId]);
     const [executionsSummary, setExecutionsSummary] = useState<ExecutionAggregateType[]>([]);
     const [isLoading, setIsLoading] = useState(false);

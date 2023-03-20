@@ -6,15 +6,16 @@ import { DefaultModal } from '../../commons/modal/DefaultModal';
 import { SelectStock } from '../../commons/select/stock/SelectStock';
 import { Calendar } from '../../commons/calendar/Calendar';
 import { useForm } from "react-hook-form";
-import http from '../../../config/http/axios'
 import { useLocation, useNavigate, useParams, useResolvedPath } from 'react-router-dom';
 import { useExecutionContext } from '../context/ExecutionContext';
 import { useExecutionSummaryContext } from '../context/ExecutionSummaryContext';
+import { useApplicationContext } from '../../commons/application/context/ApplicationContext';
 
 
 export function ExecutionModal() {
 	const { register, handleSubmit, reset, setValue } = useForm();
 
+	const { http } = useApplicationContext();
 	const { searchExecutionSummary } = useExecutionSummaryContext();
 	const { searchExecutions } = useExecutionContext();
 	const { state } = useLocation();
@@ -120,7 +121,7 @@ export function ExecutionModal() {
 		setIsLoading(true)
 		let promise;
 
-		if(executionId && state?.isSelling) promise = sell(data); 
+		if (executionId && state?.isSelling) promise = sell(data);
 		else if (executionId) promise = update(data);
 		else promise = save(data);
 
@@ -129,6 +130,7 @@ export function ExecutionModal() {
 			.finally(() => setIsLoading(false));
 
 		function resetModal() {
+			debugger
 			disclosure.onClose();
 			reset();
 			setExecutedAt(new Date());
@@ -138,7 +140,7 @@ export function ExecutionModal() {
 
 	function save(data: any) {
 		return http.post('/executions', {
-			stockId: stock.value,
+			stockId: stock?.value,
 			walletId: walletId,
 			profitPercentage: data.profitPercentage,
 			executedQuantity: data.executedQuantity,
@@ -150,7 +152,7 @@ export function ExecutionModal() {
 	function update(data: any) {
 		return http.put(`/executions/${executionId}`, {
 			id: executionId,
-			stockId: stock.value,
+			stockId: stock?.value,
 			walletId: walletId,
 			profitPercentage: data.profitPercentage,
 			executedQuantity: data.executedQuantity,
