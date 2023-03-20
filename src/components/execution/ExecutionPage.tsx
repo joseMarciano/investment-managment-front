@@ -8,9 +8,9 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ExecutionPageItem } from '../../model-types/ExecutionTypes';
 import { DateFormatter } from '../../utils/DateFormatter';
 import { BsCurrencyExchange } from 'react-icons/bs';
-import { AiOutlineEdit } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineShoppingCart } from 'react-icons/ai';
 import { HiDotsVertical } from 'react-icons/hi'
-import { MdDeleteForever } from 'react-icons/md'
+import { MdAttachMoney, MdDeleteForever } from 'react-icons/md'
 import { MoneyFormatter } from '../../utils/MoneyFormatter';
 import { DEFAULT_STYLES } from '../../config/styles/theme';
 import { useMemo } from 'react';
@@ -36,10 +36,12 @@ export function ExecutionPage() {
         <TitlePage title={`Execuções de ${symbol}`} />
         <VStack p={isLarge ? 4 : 2} gap={isLarge ? 5 : 1}>
             <Box width={'100%'} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} gap={2}>
-                <Link to={'add'} state={{ modalIsOpen: true, stock: {
-                    label: symbol,
-                    value: stockId
-                } }}><Button isLoading={isLoading} colorScheme={'green'}>Adicionar</Button></Link>
+                <Link to={'add'} state={{
+                    modalIsOpen: true, stock: {
+                        label: symbol,
+                        value: stockId
+                    }
+                }}><Button isLoading={isLoading} colorScheme={'green'}>Adicionar</Button></Link>
                 <SearchCommons isLoading={isLoading} onClickRefresh={searchExecutions} />
             </Box>
             <Box textAlign='center' width='100%' >
@@ -76,7 +78,9 @@ export function ExecutionPage() {
         const TdItem = ({ value }: { value: string | number | null }) => <Td textAlign='center'>{value}</Td>
 
         return <Tr>
-            <TdItem value={execution.status} />
+            <Td>
+               { execution.status === 'BUY' ? <AiOutlineShoppingCart /> : <MdAttachMoney/>}
+            </Td>
             <TdItem value={MoneyFormatter.shortBRL(9)} />
             <TdItem value={MoneyFormatter.shortBRL(4)} />
             <TdItem value={execution.executedQuantity} />
@@ -93,29 +97,33 @@ export function ExecutionPage() {
                 label: 'Vender',
                 icon: BsCurrencyExchange,
                 onClick: () => {
-                    navigate(`sell/${execution.id}`, {state: {
-                        modalIsOpen: true,
-                        isSelling: true,
-                        stock: {
-                            value: stockId,
-                            label: symbol
+                    navigate(`sell/${execution.id}`, {
+                        state: {
+                            modalIsOpen: true,
+                            isSelling: true,
+                            stock: {
+                                value: stockId,
+                                label: symbol
+                            }
                         }
-                    }})
-                 }
+                    })
+                }
             },
             {
                 key: 'EDIT',
                 label: 'Editar',
                 icon: AiOutlineEdit,
                 onClick: async () => {
-                    navigate(`edit/${execution.id}`, {state: {
-                        execution: await findExecutionById(execution.id),
-                        modalIsOpen: true,
-                        stock: {
-                            value: stockId,
-                            label: symbol
+                    navigate(`edit/${execution.id}`, {
+                        state: {
+                            execution: await findExecutionById(execution.id),
+                            modalIsOpen: true,
+                            stock: {
+                                value: stockId,
+                                label: symbol
+                            }
                         }
-                    }})
+                    })
                 }
             },
             {
@@ -138,12 +146,12 @@ export function ExecutionPage() {
                 variant='unstyled'
             />
             <MenuList bg={DEFAULT_STYLES.styles.global.body.bg}>
-                {menu.map((it) =>{
-                    if(it.key === 'SELL' && execution.status === 'SELL') return null;
+                {menu.map((it) => {
+                    if ((it.key === 'SELL' && execution.status === 'SELL') || (execution.executedQuantity === 0 && it.key === 'SELL' )) return null;
 
                     return <MenuItem onClick={it.onClick} key={it.key} _hover={{ filter: 'brightness(135%)' }} bg={'inherit'} icon={<it.icon />}>
-                    {it.label}
-                </MenuItem>
+                        {it.label}
+                    </MenuItem>
 
                 })}
             </MenuList>
