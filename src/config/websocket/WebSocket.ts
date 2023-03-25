@@ -24,6 +24,7 @@ export class SockJs {
             this.sockJs = new SockJS(`${process.env.REACT_APP_INVESTMENT_CALCULATOR}/websocket`);
             this.stompClient = over(this.sockJs);
             this.stompClient.connect({}, this.onConnected.bind(this), this.onError.bind(this));
+            this.stompClient.debug = () => { }; // TODO: Review this. It was necessary to stop debug llogs
         } catch (error) {
             console.error(error)
         }
