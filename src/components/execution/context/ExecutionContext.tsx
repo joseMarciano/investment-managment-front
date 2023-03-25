@@ -8,6 +8,7 @@ import { useApplicationContext } from '../../commons/application/context/Applica
 
 type ExecutionContextProps = {
     executions: ExecutionPageItem[],
+    setExecutions: (executions: ExecutionPageItem[]) => void,
     searchExecutions: () => Promise<void>,
     deleteExecution: (executionId: string) => Promise<void>,
     findExecutionById: (executionId: string) => Promise<Execution>,
@@ -32,7 +33,7 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
     }, [])
 
     return (
-        <ExecutionContext.Provider value={{ executions, isLoading, searchExecutions, deleteExecution, findExecutionById }}>
+        <ExecutionContext.Provider value={{ setExecutions, executions, isLoading, searchExecutions, deleteExecution, findExecutionById }}>
             {children}
             <Loader isLoading={isLoading} />
         </ExecutionContext.Provider>

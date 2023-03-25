@@ -130,7 +130,6 @@ export function ExecutionModal() {
 			.finally(() => setIsLoading(false));
 
 		function resetModal() {
-			debugger
 			disclosure.onClose();
 			reset();
 			setExecutedAt(new Date());

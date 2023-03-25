@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Menu, MenuButton, MenuItem, MenuList, Table, TableCaption, TableContainer, Tbody, Td, Th, Thead, Tr, VStack } from '@chakra-ui/react';
+import { Box, Button, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react';
 import { SearchCommons } from '../commons/search/SearchCommons';
 import { TitlePage } from '../commons/title-page/TitlePage';
 import { useApplicationContext } from '../commons/application/context/ApplicationContext';
@@ -13,7 +13,13 @@ import { HiDotsVertical } from 'react-icons/hi'
 import { MdAttachMoney, MdDeleteForever } from 'react-icons/md'
 import { MoneyFormatter } from '../../utils/MoneyFormatter';
 import { DEFAULT_STYLES } from '../../config/styles/theme';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { SockJs } from '../../config/websocket/WebSocket';
+import { Message } from 'stompjs';
+import { TriangleDownIcon, TriangleUpIcon, } from '@chakra-ui/icons';
+import { BsDashCircleFill } from 'react-icons/bs';
+
+const PNL_OPEN_TOPIC = '/client/user-id/pnl-open';
 
 type ExecutionRowProps = {
     execution: ExecutionPageItem
@@ -28,9 +34,43 @@ export function ExecutionPage() {
     const navigate = useNavigate();
     const { stockId } = useParams();
     const symbol = useMemo(() => state?.symbol, [])
+    const socket = useMemo(() => SockJs.getInstance(), []);
 
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions } = useExecutionContext();
+    const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions, setExecutions } = useExecutionContext();
+    const currentExecutions = useRef(executions);
+
+    useEffect(() => {
+        subscribePnlOpen()
+
+        return () => {
+            socket.unsubscribe(PNL_OPEN_TOPIC)
+        }
+    }, []);
+
+
+    useEffect(() => {
+        currentExecutions.current = executions;
+    }, [executions])
+
+    function subscribePnlOpen() {
+        socket.subscribe(PNL_OPEN_TOPIC, updatePnlExecution)
+    }
+
+    function updatePnlExecution(message: Message | undefined) {
+        const exec = currentExecutions.current;
+        const body = JSON.parse(message?.body || '');
+        const executionsUpdated = exec.map(it => {
+            if (it.id !== body?.executionID) return it;
+
+            it.pnlOpen = body?.pnl || 0;;
+            return it;
+        })
+
+        setExecutions([...executionsUpdated])
+    }
+
+
 
     return <Box>
         <TitlePage title={`Execuções de ${symbol}`} />
@@ -78,16 +118,25 @@ export function ExecutionPage() {
         const TdItem = ({ value }: { value: string | number | null }) => <Td textAlign='center'>{value}</Td>
 
         return <Tr>
-            <Td>
-               { execution.status === 'BUY' ? <AiOutlineShoppingCart /> : <MdAttachMoney/>}
-            </Td>
-            <TdItem value={MoneyFormatter.shortBRL(9)} />
-            <TdItem value={MoneyFormatter.shortBRL(4)} />
+            <Td>{execution.status === 'BUY' ? <AiOutlineShoppingCart /> : <MdAttachMoney />}</Td>
+            <PnlRow pnl={execution.pnlOpen || 0} />
+            <PnlRow pnl={4} />
             <TdItem value={execution.executedQuantity} />
             <TdItem value={execution.profitPercentage} />
             <TdItem value={DateFormatter.format(execution.executedAt)} />
             <Td textAlign='center'><MenuRow execution={execution} /></Td>
         </Tr>
+    }
+
+    function PnlRow({ pnl }: { pnl: number }) {
+        return <Td textAlign='center'>
+            <HStack alignItems='center'>
+                <Text>{MoneyFormatter.shortBRL(pnl)}  </Text>
+                {pnl > 0 && <TriangleUpIcon alignSelf='flex-end' color='green.400' />}
+                {pnl < 0 && <TriangleDownIcon alignSelf='flex-end' color='red.400' />}
+                {pnl === 0 && <BsDashCircleFill />}
+            </HStack>
+        </Td>
     }
 
     function MenuRow({ execution }: MenuRowProps) {
@@ -147,8 +196,7 @@ export function ExecutionPage() {
             />
             <MenuList bg={DEFAULT_STYLES.styles.global.body.bg}>
                 {menu.map((it) => {
-                    if ((it.key === 'SELL' && execution.status === 'SELL') || (execution.executedQuantity === 0 && it.key === 'SELL' )) return null;
-
+                    if ((it.key === 'SELL' && execution.status === 'SELL') || (execution.executedQuantity === 0 && it.key === 'SELL')) return null;
                     return <MenuItem onClick={it.onClick} key={it.key} _hover={{ filter: 'brightness(135%)' }} bg={'inherit'} icon={<it.icon />}>
                         {it.label}
                     </MenuItem>
