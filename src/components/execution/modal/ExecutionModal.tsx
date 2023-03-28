@@ -17,7 +17,7 @@ export function ExecutionModal() {
 
 	const { http } = useApplicationContext();
 	const { searchExecutionSummary } = useExecutionSummaryContext();
-	const { searchExecutions } = useExecutionContext();
+	const { searchExecutions, searchExecutionsTotalizator } = useExecutionContext();
 	const { state } = useLocation();
 	const { executionId, walletId } = useParams();
 	const [stock, setStock] = useState<any>();
@@ -38,6 +38,7 @@ export function ExecutionModal() {
 			navigate(-1)
 			searchExecutionSummary && searchExecutionSummary();
 			searchExecutions && searchExecutions();
+			searchExecutionsTotalizator && searchExecutionsTotalizator();
 		}
 	})
 

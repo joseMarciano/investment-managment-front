@@ -43,3 +43,10 @@ export type Execution = {
     createdAt: string,
     updatedAt: string
 }
+
+export type ExecutionTotalizator = {
+    totalSoldQuantity: number
+    totalBoughtQuantity: number
+    totalPnlOpen: number
+    totalPnlClose: number
+}

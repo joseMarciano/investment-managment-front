@@ -1,4 +1,4 @@
-import { Box, Button, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react';
+import { Box, Button, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Stat, StatArrow, StatGroup, StatHelpText, StatLabel, StatNumber, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react';
 import { SearchCommons } from '../commons/search/SearchCommons';
 import { TitlePage } from '../commons/title-page/TitlePage';
 import { useApplicationContext } from '../commons/application/context/ApplicationContext';
@@ -37,7 +37,7 @@ export function ExecutionPage() {
     const socket = useMemo(() => SockJs.getInstance(), []);
 
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions, setExecutions } = useExecutionContext();
+    const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions, setExecutions, searchExecutionsTotalizator, executionsTotalizator } = useExecutionContext();
     const currentExecutions = useRef(executions);
 
     useEffect(() => {
@@ -75,6 +75,35 @@ export function ExecutionPage() {
     return <Box>
         <TitlePage title={`Execuções de ${symbol}`} />
         <VStack p={isLarge ? 4 : 2} gap={isLarge ? 5 : 1}>
+
+            <Box width='100%' >
+                <StatGroup borderRadius='10px' bgColor='gray.700' p={5}>
+                    <Stat>
+                        <StatLabel>Quantidade comprados</StatLabel>
+                        <StatNumber>{(executionsTotalizator?.totalBoughtQuantity || 0) - executionsTotalizator?.totalSoldQuantity || 0} </StatNumber>
+                    </Stat>
+                    <Stat>
+                        <StatLabel>Quantidade vendidos</StatLabel>
+                        <StatNumber>{executionsTotalizator?.totalSoldQuantity || 0} </StatNumber>
+                    </Stat>
+                    <Stat>
+                        <StatLabel>PnL total aberto</StatLabel>
+                        <StatNumber>
+                            {MoneyFormatter.shortBRL(executionsTotalizator?.totalPnlOpen || 0)}
+                            {executionsTotalizator?.totalPnlOpen >= 0 && <StatArrow type='increase' />}
+                            {executionsTotalizator?.totalPnlOpen <= 0 && <StatArrow type='decrease' />}
+                        </StatNumber>
+                    </Stat>
+                    <Stat>
+                        <StatLabel>PnL total fechado</StatLabel>
+                        <StatNumber>
+                            {MoneyFormatter.shortBRL(executionsTotalizator?.totalPnlClose || 0)}
+                            {executionsTotalizator?.totalPnlClose >= 0 && <StatArrow type='increase' />}
+                            {executionsTotalizator?.totalPnlClose <= 0 && <StatArrow type='decrease' />}
+                        </StatNumber>
+                    </Stat>
+                </StatGroup>
+            </Box>
             <Box width={'100%'} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} gap={2}>
                 <Link to={'add'} state={{
                     modalIsOpen: true, stock: {
@@ -82,7 +111,10 @@ export function ExecutionPage() {
                         value: stockId
                     }
                 }}><Button isLoading={isLoading} colorScheme={'green'}>Adicionar</Button></Link>
-                <SearchCommons isLoading={isLoading} onClickRefresh={searchExecutions} />
+                <SearchCommons isLoading={isLoading} onClickRefresh={() => {
+                    searchExecutions();
+                    searchExecutionsTotalizator();
+                }} />
             </Box>
             <Box textAlign='center' width='100%' >
                 {!executions?.length && <CardEmptyList model='Execuções' />}

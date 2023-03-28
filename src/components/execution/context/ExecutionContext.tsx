@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useLocation, useParams } from 'react-router-dom';
 import { Loader } from '../../commons/loader/Loader';
-import { ExecutionPagination, ExecutionPageItem, Execution } from '../../../model-types/ExecutionTypes';
+import { ExecutionPagination, ExecutionPageItem, Execution, ExecutionTotalizator } from '../../../model-types/ExecutionTypes';
 import { ExecutionModal } from '../modal/ExecutionModal';
 import { useDisclosure, UseDisclosureReturn } from '@chakra-ui/react';
 import { useApplicationContext } from '../../commons/application/context/ApplicationContext';
@@ -12,6 +12,8 @@ type ExecutionContextProps = {
     searchExecutions: () => Promise<void>,
     deleteExecution: (executionId: string) => Promise<void>,
     findExecutionById: (executionId: string) => Promise<Execution>,
+    executionsTotalizator: ExecutionTotalizator,
+    searchExecutionsTotalizator: () => Promise<void>,
     isLoading: boolean
 };
 
@@ -26,14 +28,16 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
     const { http } = useApplicationContext();
     const baseUrl = useMemo(() => `executions`, []);
     const [executions, setExecutions] = useState<ExecutionPageItem[]>([]);
+    const [executionsTotalizator, setExecutionsTotalizator] = useState<ExecutionTotalizator>(null as unknown as ExecutionTotalizator);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         searchExecutions();
+        searchExecutionsTotalizator();
     }, [])
 
     return (
-        <ExecutionContext.Provider value={{ setExecutions, executions, isLoading, searchExecutions, deleteExecution, findExecutionById }}>
+        <ExecutionContext.Provider value={{ searchExecutionsTotalizator, executionsTotalizator, setExecutions, executions, isLoading, searchExecutions, deleteExecution, findExecutionById }}>
             {children}
             <Loader isLoading={isLoading} />
         </ExecutionContext.Provider>
@@ -45,6 +49,13 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
             .then((data) => setExecutions(data ?? []))
             .catch((e) => console.error('Error on fetch executions', e))
             .finally(() => setIsLoading(false))
+    }
+
+    async function searchExecutionsTotalizator() {
+        setIsLoading(true);
+        getExecutionsTotalizator()
+            .then((data) => setExecutionsTotalizator(data))
+            .catch((e) => console.error('Error on fetch executions totalizer', e));
     }
 
     async function deleteExecution(executionId: string): Promise<void> {
@@ -66,6 +77,16 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
         }
         finally {
             setIsLoading(false);
+        }
+    }
+
+    async function getExecutionsTotalizator(): Promise<any> {
+        try {
+            const { data } = await http.get<ExecutionTotalizator>(`${baseUrl}/totalizator`, { params: { walletId, stockId: stockId } });
+            return data || null;
+        } catch (error) {
+            console.error('Error on fetch executions', error);
+            return null;
         }
     }
 
