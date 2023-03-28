@@ -120,7 +120,7 @@ export function ExecutionPage() {
         return <Tr>
             <Td>{execution.status === 'BUY' ? <AiOutlineShoppingCart /> : <MdAttachMoney />}</Td>
             <PnlRow pnl={execution.pnlOpen || 0} />
-            <PnlRow pnl={4} />
+            <PnlRow pnl={execution.pnlClose || 0} />
             <TdItem value={execution.executedQuantity} />
             <TdItem value={execution.profitPercentage} />
             <TdItem value={DateFormatter.format(execution.executedAt)} />

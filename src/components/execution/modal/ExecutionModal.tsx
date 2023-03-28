@@ -82,6 +82,17 @@ export function ExecutionModal() {
 						</InputGroup>
 					</FormControl>
 					}
+					{state?.isSelling && <FormControl isRequired>
+						<FormLabel>Preço do ativo</FormLabel>
+						<InputGroup>
+							<InputRightElement
+								pointerEvents='none'
+								children={<TbCurrencyReal color='gray.300' />}
+							/>
+							<Input isDisabled={isLoading} type='number' {...register('stockSoldPrice')} />
+						</InputGroup>
+					</FormControl>
+					}
 				</HStack>
 
 				<FormControl isRequired>
@@ -165,6 +176,7 @@ export function ExecutionModal() {
 			originId: executionId,
 			executedQuantity: data.executedQuantity,
 			executedPrice: data.executedPrice,
+			stockSoldPrice: data.stockSoldPrice,
 			executedAt: executedAt
 		})
 	}

@@ -22,6 +22,7 @@ export type ExecutionPageItem = {
     executedPrice: number,
     executedVolume: number,
     pnlOpen: number,
+    pnlClose: number,
     status: string,
     executedAt: string,
     createdAt: string,

@@ -58,7 +58,10 @@ export class SockJs {
 
 
     private stompSubscribe(destination: string, resolve: (message?: Message) => void): Subscription {
-        return this.stompClient.subscribe(destination, (message) => resolve(message));
+        return this.stompClient.subscribe(destination, (message) => {
+            resolve(message)
+            console.log(`Received from ${destination}`, message.body)
+        });
     }
 
 
