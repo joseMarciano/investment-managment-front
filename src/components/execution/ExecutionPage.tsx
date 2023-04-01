@@ -20,6 +20,7 @@ import { TriangleDownIcon, TriangleUpIcon, } from '@chakra-ui/icons';
 import { BsDashCircleFill } from 'react-icons/bs';
 
 const PNL_OPEN_TOPIC = '/client/user-id/pnl-open';
+const PNL_OPEN_TOTALIZATOR_TOPIC = (walletId: string, stockId: string) => `/client/user-id/${walletId}/${stockId}/pnl-open-totalizator`
 
 type ExecutionRowProps = {
     execution: ExecutionPageItem
@@ -32,29 +33,33 @@ type MenuRowProps = {
 export function ExecutionPage() {
     const { state } = useLocation();
     const navigate = useNavigate();
-    const { stockId } = useParams();
+    const { stockId, walletId } = useParams();
     const symbol = useMemo(() => state?.symbol, [])
     const socket = useMemo(() => SockJs.getInstance(), []);
 
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions, setExecutions, searchExecutionsTotalizator, executionsTotalizator } = useExecutionContext();
+    const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions, setExecutions, searchExecutionsTotalizator, executionsTotalizator, setExecutionsTotalizator } = useExecutionContext();
     const currentExecutions = useRef(executions);
+    const currentTotalizator = useRef(executionsTotalizator);
 
     useEffect(() => {
-        subscribePnlOpen()
+        hasSubscribers()
 
         return () => {
             socket.unsubscribe(PNL_OPEN_TOPIC)
+            socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string))
         }
     }, []);
 
 
     useEffect(() => {
         currentExecutions.current = executions;
-    }, [executions])
+        currentTotalizator.current = executionsTotalizator;
+    }, [executions, executionsTotalizator])
 
-    function subscribePnlOpen() {
-        socket.subscribe(PNL_OPEN_TOPIC, updatePnlExecution)
+    function hasSubscribers() {
+        socket.subscribe(PNL_OPEN_TOPIC, updatePnlExecution);
+        socket.subscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string), updatePnlTotalizatorExecution);
     }
 
     function updatePnlExecution(message: Message | undefined) {
@@ -70,6 +75,15 @@ export function ExecutionPage() {
         setExecutions([...executionsUpdated])
     }
 
+
+    function updatePnlTotalizatorExecution(message: Message | undefined) {
+        const body = JSON.parse(message?.body || '');
+
+        setExecutionsTotalizator({
+            ...currentTotalizator.current,
+            totalPnlOpen: body?.pnlOpen || 0
+        })
+    }
 
 
     return <Box>
@@ -212,7 +226,7 @@ export function ExecutionPage() {
                 label: 'Excluir',
                 icon: MdDeleteForever,
                 onClick: () => {
-                    deleteExecution(execution.id);
+                    deleteExecution(execution.id).then(searchExecutionsTotalizator);
                 }
             },
         ], [])

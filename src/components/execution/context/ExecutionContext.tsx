@@ -14,6 +14,7 @@ type ExecutionContextProps = {
     findExecutionById: (executionId: string) => Promise<Execution>,
     executionsTotalizator: ExecutionTotalizator,
     searchExecutionsTotalizator: () => Promise<void>,
+    setExecutionsTotalizator: (totalizator: ExecutionTotalizator) => void,
     isLoading: boolean
 };
 
@@ -37,7 +38,7 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
     }, [])
 
     return (
-        <ExecutionContext.Provider value={{ searchExecutionsTotalizator, executionsTotalizator, setExecutions, executions, isLoading, searchExecutions, deleteExecution, findExecutionById }}>
+        <ExecutionContext.Provider value={{ searchExecutionsTotalizator, executionsTotalizator, setExecutionsTotalizator, setExecutions, executions, isLoading, searchExecutions, deleteExecution, findExecutionById }}>
             {children}
             <Loader isLoading={isLoading} />
         </ExecutionContext.Provider>
@@ -55,7 +56,8 @@ export function ExecutionContextProvider({ children }: ExecutionContextProviderP
         setIsLoading(true);
         getExecutionsTotalizator()
             .then((data) => setExecutionsTotalizator(data))
-            .catch((e) => console.error('Error on fetch executions totalizer', e));
+            .catch((e) => console.error('Error on fetch executions totalizer', e))
+            .finally(() =>  setIsLoading(false));
     }
 
     async function deleteExecution(executionId: string): Promise<void> {
