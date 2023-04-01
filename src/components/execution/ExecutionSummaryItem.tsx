@@ -5,7 +5,7 @@ import { ExecutionAggregateType } from '../../model-types/ExecutionTypes';
 import { MoneyFormatter } from '../../utils/MoneyFormatter';
 import { Link, useParams } from 'react-router-dom';
 import { SockJs } from '../../config/websocket/WebSocket';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Message } from 'stompjs';
 
 type ExecutionSummaryItemProps = {
@@ -20,6 +20,7 @@ type CurrentValueProps = {
 }
 
 const PNL_OPEN_TOTALIZATOR_TOPIC = (walletId: string, stockId: string) => `/client/user-id/${walletId}/${stockId}/pnl-open-totalizator`
+const LAST_TRADE_PRICE_TOPIC = (symbol: string) => `/client/user-id/${symbol}/last-trade-price`
 
 
 export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary, executionsSummary }: ExecutionSummaryItemProps) {
@@ -61,6 +62,8 @@ export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary,
     }
 
 
+
+
     return <Link to={`/executions/${walletId}/${executionAggregate.stockId}`} state={{ symbol: executionAggregate.symbol }}>
         <Box _hover={{ filter: 'brightness(135%)' }} cursor={'pointer'} mt={2} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} fontSize='sm' fontWeight='medium' borderRadius={8} p={3} bgColor={'gray.700'}>
             <HStack width={isLarge ? '25%' : '100%'} justify={isLarge ? '' : 'space-between'} align='center'>
@@ -69,11 +72,30 @@ export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary,
             </HStack>
             <CurrencyValue label={'Pnl aberto'} value={executionAggregate.totalPnlOpen || 0} />
             <CurrencyValue label={'Pnl fechado'} value={executionAggregate.totalPnlClose || 0} />
-            <CurrencyValue label={'Preço atual'} value={11.44} />
+            <LastTradePriceWebSocketWrapper />
         </Box>
     </Link>
 
 
+    function LastTradePriceWebSocketWrapper() {
+        const [pnl, setPnl] = useState(0);
+
+
+        useEffect(() => {
+            socket.subscribe(LAST_TRADE_PRICE_TOPIC(executionAggregate.symbol), updateLastTradePrice);
+
+            return () => {
+                socket.unsubscribe(LAST_TRADE_PRICE_TOPIC(executionAggregate.symbol as string))
+            }
+        }, [])
+
+        function updateLastTradePrice(message: Message | undefined) {
+            const body = JSON.parse(message?.body || '');
+            setPnl(body.lastTradePrice || 0)
+        }
+
+        return <CurrencyValue label={'Preço atual'} value={pnl || 0} />
+    }
 
 
     function CurrencyValue({ label, value }: CurrentValueProps) {
