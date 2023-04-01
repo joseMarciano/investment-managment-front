@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 export function ExecutionSummaryPage() {
     const { responsiveStatus: { isLarge } } = useApplicationContext();
-    const { executionsSummary, isLoading, searchExecutionSummary } = useExecutionSummaryContext();
+    const { executionsSummary, isLoading, searchExecutionSummary, setExecutionsSummary } = useExecutionSummaryContext();
 
     return <Box>
         <TitlePage title='Execuções' />
@@ -20,7 +20,7 @@ export function ExecutionSummaryPage() {
             </Box>
             <Box width='100%' >
                 {(!executionsSummary || !executionsSummary.length) && <CardEmptyList model='Resumo de execuções' />}
-                {executionsSummary.map((it) => <ExecutionSummaryItem key={it.stockId} executionAggregate={it} />)}
+                {executionsSummary.map((it) => <ExecutionSummaryItem key={it.stockId} setExecutionsSummary={setExecutionsSummary} executionsSummary={executionsSummary} executionAggregate={it} />)}
             </Box>
         </VStack>
     </Box>

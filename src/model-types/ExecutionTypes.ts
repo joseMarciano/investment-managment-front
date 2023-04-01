@@ -2,7 +2,9 @@
 export type ExecutionAggregateType = {
     stockId: string,
     symbol: string,
-    totalCustodyQuantity: number
+    totalCustodyQuantity: number,
+    totalPnlClose: number,
+    totalPnlOpen: number
 }
 
 export type ExecutionPagination = {

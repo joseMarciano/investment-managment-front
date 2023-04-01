@@ -8,6 +8,7 @@ import { useApplicationContext } from '../../commons/application/context/Applica
 
 type ExecutionSummaryContextProps = {
     executionsSummary: ExecutionAggregateType[],
+    setExecutionsSummary: (executionsSummary: ExecutionAggregateType[]) => void,
     searchExecutionSummary: () => Promise<void>,
     isLoading: boolean
 };
@@ -30,7 +31,7 @@ export function ExecutionSummaryContextProvider({ children }: ExecutionSummaryCo
     }, [])
 
     return (
-        <ExecutionSummaryContext.Provider value={{ executionsSummary, isLoading, searchExecutionSummary }}>
+        <ExecutionSummaryContext.Provider value={{ executionsSummary, isLoading, searchExecutionSummary, setExecutionsSummary }}>
             {children}
             <Loader isLoading={isLoading} />
         </ExecutionSummaryContext.Provider>
