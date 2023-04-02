@@ -13,13 +13,13 @@ import { HiDotsVertical } from 'react-icons/hi'
 import { MdAttachMoney, MdDeleteForever } from 'react-icons/md'
 import { MoneyFormatter } from '../../utils/MoneyFormatter';
 import { DEFAULT_STYLES } from '../../config/styles/theme';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { SockJs } from '../../config/websocket/WebSocket';
 import { Message } from 'stompjs';
 import { TriangleDownIcon, TriangleUpIcon, } from '@chakra-ui/icons';
 import { BsDashCircleFill } from 'react-icons/bs';
 
-const PNL_OPEN_TOPIC = '/client/user-id/pnl-open';
+const PNL_OPEN_TOPIC = (executionId: string) => `/client/user-id/${executionId}/pnl-open`;
 const PNL_OPEN_TOTALIZATOR_TOPIC = (walletId: string, stockId: string) => `/client/user-id/${walletId}/${stockId}/pnl-open-totalizator`
 
 type ExecutionRowProps = {
@@ -39,51 +39,51 @@ export function ExecutionPage() {
 
     const { responsiveStatus: { isLarge } } = useApplicationContext();
     const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions, setExecutions, searchExecutionsTotalizator, executionsTotalizator, setExecutionsTotalizator } = useExecutionContext();
-    const currentExecutions = useRef(executions);
-    const currentTotalizator = useRef(executionsTotalizator);
+    // const currentExecutions = useRef(executions);
+    // const currentTotalizator = useRef(executionsTotalizator);
 
-    useEffect(() => {
-        hasSubscribers()
+    // useEffect(() => {
+    //     hasSubscribers()
 
-        return () => {
-            socket.unsubscribe(PNL_OPEN_TOPIC)
-            socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string))
-        }
-    }, []);
-
-
-    useEffect(() => {
-        currentExecutions.current = executions;
-        currentTotalizator.current = executionsTotalizator;
-    }, [executions, executionsTotalizator])
-
-    function hasSubscribers() {
-        socket.subscribe(PNL_OPEN_TOPIC, updatePnlExecution);
-        socket.subscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string), updatePnlTotalizatorExecution);
-    }
-
-    function updatePnlExecution(message: Message | undefined) {
-        const exec = currentExecutions.current;
-        const body = JSON.parse(message?.body || '');
-        const executionsUpdated = exec.map(it => {
-            if (it.id !== body?.executionID) return it;
-
-            it.pnlOpen = body?.pnl || 0;;
-            return it;
-        })
-
-        setExecutions([...executionsUpdated])
-    }
+    //     return () => {
+    //         socket.unsubscribe(PNL_OPEN_TOPIC)
+    //         socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string))
+    //     }
+    // }, []);
 
 
-    function updatePnlTotalizatorExecution(message: Message | undefined) {
-        const body = JSON.parse(message?.body || '');
+    // useEffect(() => {
+    //     currentExecutions.current = executions;
+    //     currentTotalizator.current = executionsTotalizator;
+    // }, [executions, executionsTotalizator])
 
-        setExecutionsTotalizator({
-            ...currentTotalizator.current,
-            totalPnlOpen: body?.pnlOpen || 0
-        })
-    }
+    // function hasSubscribers() {
+    //     socket.subscribe(PNL_OPEN_TOPIC, updatePnlExecution);
+    //     socket.subscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string), updatePnlTotalizatorExecution);
+    // }
+
+    // function updatePnlExecution(message: Message | undefined) {
+    //     const exec = currentExecutions.current;
+    //     const body = JSON.parse(message?.body || '');
+    //     const executionsUpdated = exec.map(it => {
+    //         if (it.id !== body?.executionID) return it;
+
+    //         it.pnlOpen = body?.pnl || 0;;
+    //         return it;
+    //     })
+
+    //     setExecutions([...executionsUpdated])
+    // }
+
+
+    // function updatePnlTotalizatorExecution(message: Message | undefined) {
+    //     const body = JSON.parse(message?.body || '');
+
+    //     setExecutionsTotalizator({
+    //         ...currentTotalizator.current,
+    //         totalPnlOpen: body?.pnlOpen || 0
+    //     })
+    // }
 
 
     return <Box>
@@ -102,11 +102,7 @@ export function ExecutionPage() {
                     </Stat>
                     <Stat>
                         <StatLabel>PnL total aberto</StatLabel>
-                        <StatNumber>
-                            {MoneyFormatter.shortBRL(executionsTotalizator?.totalPnlOpen || 0)}
-                            {executionsTotalizator?.totalPnlOpen >= 0 && <StatArrow type='increase' />}
-                            {executionsTotalizator?.totalPnlOpen <= 0 && <StatArrow type='decrease' />}
-                        </StatNumber>
+                        <PnlOpenTotalizatorWebSocketWrapper value={executionsTotalizator?.totalPnlOpen || 0}/>
                     </Stat>
                     <Stat>
                         <StatLabel>PnL total fechado</StatLabel>
@@ -165,7 +161,7 @@ export function ExecutionPage() {
 
         return <Tr>
             <Td>{execution.status === 'BUY' ? <AiOutlineShoppingCart /> : <MdAttachMoney />}</Td>
-            <PnlRow pnl={execution.pnlOpen || 0} />
+            <PnlOpenWebSocketWrapper execution={execution}/> 
             <PnlRow pnl={execution.pnlClose || 0} />
             <TdItem value={execution.executedQuantity} />
             <TdItem value={execution.profitPercentage} />
@@ -184,6 +180,70 @@ export function ExecutionPage() {
             </HStack>
         </Td>
     }
+
+    function PnlOpenWebSocketWrapper({ execution }: any) {
+        const [pnlOpen, setPnlOpen] = useState(execution.pnlOpen);
+
+        useEffect(() => {
+            subscribe()
+
+            return () => {
+                socket.unsubscribe(PNL_OPEN_TOPIC(execution.id as string))
+            }
+        }, []);
+
+        useEffect(() => {
+            setPnlOpen(pnlOpen);
+        }, [execution.pnlOpen])
+
+
+
+        function subscribe() {
+            socket.subscribe(PNL_OPEN_TOPIC(execution.id as string), updatePnlExecution);
+        }
+
+        function updatePnlExecution(message: Message | undefined) {
+            const body = JSON.parse(message?.body || '');
+            setPnlOpen(body?.pnl || 0)
+        }
+
+        return <PnlRow pnl={pnlOpen || 0} />
+    }
+
+
+    function PnlOpenTotalizatorWebSocketWrapper({ value }: any) {
+        const [pnlOpenTotalizator, setPnlOpenTotalizator] = useState(value);
+
+        useEffect(() => {
+            subscribe()
+
+            return () => {
+                socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string))
+            }
+        }, []);
+
+        useEffect(() => {
+            setPnlOpenTotalizator(pnlOpenTotalizator);
+        }, [value])
+
+
+
+        function subscribe() {
+            socket.subscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string), updatePnlExecution);
+        }
+
+        function updatePnlExecution(message: Message | undefined) {
+            const body = JSON.parse(message?.body || '');
+            setPnlOpenTotalizator(body?.pnlOpen || 0)
+        }
+
+        return <StatNumber>
+            {MoneyFormatter.shortBRL(pnlOpenTotalizator || 0)}
+            {pnlOpenTotalizator >= 0 && <StatArrow type='increase' />}
+            {pnlOpenTotalizator <= 0 && <StatArrow type='decrease' />}
+        </StatNumber>
+    }
+
 
     function MenuRow({ execution }: MenuRowProps) {
         const menu = useMemo(() => [

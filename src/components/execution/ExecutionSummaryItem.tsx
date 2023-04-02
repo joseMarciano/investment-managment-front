@@ -29,37 +29,21 @@ export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary,
     const { responsiveStatus: { isLarge } } = useApplicationContext()
     const { walletId } = useParams();
 
-    useEffect(() => {
-        subscribe()
-
-        return () => {
-            socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, executionAggregate.stockId as string))
-        }
-    }, []);
-
-    useEffect(() => {
-        currentExecutionSummary.current = executionsSummary;
-    }, [executionsSummary])
 
 
+    // function updatePnlExecution(message: Message | undefined) {
+    //     const exec = currentExecutionSummary.current;
+    //     const body = JSON.parse(message?.body || '');
+    //     const executionsUpdated = exec.map(it => {
+    //         const stockId = (body?.id as string).split(':')[1];
+    //         if (it.stockId !== stockId) return it;
 
-    function subscribe() {
-        socket.subscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, executionAggregate.stockId), updatePnlExecution);
-    }
+    //         it.totalPnlOpen = body?.pnlOpen || 0;;
+    //         return it;
+    //     })
 
-    function updatePnlExecution(message: Message | undefined) {
-        const exec = currentExecutionSummary.current;
-        const body = JSON.parse(message?.body || '');
-        const executionsUpdated = exec.map(it => {
-            const stockId = (body?.id as string).split(':')[1];
-            if (it.stockId !== stockId) return it;
-
-            it.totalPnlOpen = body?.pnlOpen || 0;;
-            return it;
-        })
-
-        setExecutionsSummary([...executionsUpdated])
-    }
+    //     setExecutionsSummary([...executionsUpdated])
+    // }
 
 
 
@@ -70,7 +54,8 @@ export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary,
                 <Text fontWeight='bold' >{executionAggregate.symbol}</Text>
                 <Text> {executionAggregate.totalCustodyQuantity} cotas</Text>
             </HStack>
-            <CurrencyValue label={'Pnl aberto'} value={executionAggregate.totalPnlOpen || 0} />
+            <PnlOpenWebSocketWrapper value={executionAggregate.totalPnlOpen} />
+            {/* <CurrencyValue label={'Pnl aberto'} value={executionAggregate.totalPnlOpen || 0} /> */}
             <CurrencyValue label={'Pnl fechado'} value={executionAggregate.totalPnlClose || 0} />
             <LastTradePriceWebSocketWrapper />
         </Box>
@@ -78,7 +63,7 @@ export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary,
 
 
     function LastTradePriceWebSocketWrapper() {
-        const [pnl, setPnl] = useState(0);
+        const [lastTradePrice, setLastTradePrice] = useState(0);
 
 
         useEffect(() => {
@@ -91,10 +76,39 @@ export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary,
 
         function updateLastTradePrice(message: Message | undefined) {
             const body = JSON.parse(message?.body || '');
-            setPnl(body.lastTradePrice || 0)
+            setLastTradePrice(body.lastTradePrice || 0)
         }
 
-        return <CurrencyValue label={'Preço atual'} value={pnl || 0} />
+        return <CurrencyValue label={'Preço atual'} value={lastTradePrice || 0} />
+    }
+
+    function PnlOpenWebSocketWrapper({ value }: any) {
+        const [pnlOpen, setPnlOpen] = useState(value);
+
+        useEffect(() => {
+            subscribe()
+
+            return () => {
+                socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, executionAggregate.stockId as string))
+            }
+        }, []);
+
+        useEffect(() => {
+            setPnlOpen(pnlOpen);
+        }, [value])
+
+
+
+        function subscribe() {
+            socket.subscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, executionAggregate.stockId), updatePnlExecution);
+        }
+
+        function updatePnlExecution(message: Message | undefined) {
+            const body = JSON.parse(message?.body || '');
+            setPnlOpen(body?.pnlOpen || 0)
+        }
+
+        return <CurrencyValue label={'Pnl aberto'} value={pnlOpen || 0} />
     }
 
 
