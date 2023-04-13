@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/investment-managment-front/static/css/main.e9ca9cd5.css",
-    "main.js": "/investment-managment-front/static/js/main.b1bea033.js",
+    "main.js": "/investment-managment-front/static/js/main.50e2eac7.js",
     "static/media/nunito-all-400-normal.woff": "/investment-managment-front/static/media/nunito-all-400-normal.0c07f750f73ac5437580.woff",
     "static/media/nunito-latin-400-normal.woff2": "/investment-managment-front/static/media/nunito-latin-400-normal.b8644b6e04ecda1cf98b.woff2",
     "static/media/nunito-latin-ext-400-normal.woff2": "/investment-managment-front/static/media/nunito-latin-ext-400-normal.e8049e65c49ce687cff1.woff2",
@@ -10,10 +10,10 @@
     "static/media/nunito-vietnamese-400-normal.woff2": "/investment-managment-front/static/media/nunito-vietnamese-400-normal.6a8bc7acd205391fb71a.woff2",
     "index.html": "/investment-managment-front/index.html",
     "main.e9ca9cd5.css.map": "/investment-managment-front/static/css/main.e9ca9cd5.css.map",
-    "main.b1bea033.js.map": "/investment-managment-front/static/js/main.b1bea033.js.map"
+    "main.50e2eac7.js.map": "/investment-managment-front/static/js/main.50e2eac7.js.map"
   },
   "entrypoints": [
     "static/css/main.e9ca9cd5.css",
-    "static/js/main.b1bea033.js"
+    "static/js/main.50e2eac7.js"
   ]
 }
