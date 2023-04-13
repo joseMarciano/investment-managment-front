@@ -15,11 +15,10 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-// TODO: CRIAR WEB SOCKET 
 root.render(
-  // <React.StrictMode>
+  <React.StrictMode>
     <ChakraProvider theme={theme}>
       <Root />
     </ChakraProvider>
-  // </React.StrictMode>
+  </React.StrictMode>
 );
