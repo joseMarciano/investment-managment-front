@@ -21,7 +21,7 @@ export class SockJs {
 
     private connect(): void {
         try {
-            this.sockJs = new SockJS(`${process.env.REACT_APP_INVESTMENT_CALCULATOR}/websocket`);
+            this.sockJs = new SockJS(`${process.env.REACT_APP_INVESTMENT_CALCULATOR || 'http://localhost:8081/api'}/websocket`);
             this.stompClient = over(this.sockJs);
             this.stompClient.connect({}, this.onConnected.bind(this), this.onError.bind(this));
             this.stompClient.debug = () => { }; // TODO: Review this. It was necessary to stop debug llogs
