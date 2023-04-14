@@ -1,6 +1,5 @@
 {
   "name": "investment-manager",
-  "homepage": "https://joseMarciano.github.io/investment-managment-front",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
