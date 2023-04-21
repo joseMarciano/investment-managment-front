@@ -4,11 +4,12 @@ import { Client, Frame, Message, over, Subscription } from 'stompjs';
 export class SockJs {
     private static instance: SockJs
     private subscribers = new Map<string, string>();
+    private pendingSubscribers = new Map<string, (message?: Message) => void>();
     private stompClient = null as unknown as Client;
     private sockJs: any
 
     private constructor() {
-        this.connect();
+        this.init();
     }
 
     static getInstance() {
@@ -19,20 +20,28 @@ export class SockJs {
         return SockJs.instance
     }
 
-    private connect(): void {
+    private init(): void {
         try {
-            this.sockJs = new SockJS(`${process.env.REACT_APP_INVESTMENT_CALCULATOR || 'http://localhost:8081/api'}/websocket`);
+            this.sockJs = new SockJS(`${process.env.REACT_APP_INVESTMENT_CALCULATOR}/websocket`);
             this.stompClient = over(this.sockJs);
-            this.stompClient.connect({}, this.onConnected.bind(this), this.onError.bind(this));
+            this.connect();
             this.stompClient.debug = () => { }; // TODO: Review this. It was necessary to stop debug llogs
         } catch (error) {
             console.error(error)
         }
     }
 
+    private connect(): void {
+        if (!this.stompClient || !this.stompClient.connected) {
+            this.stompClient.connect({}, this.onConnected.bind(this), this.onError.bind(this));
+            return;
+        }
+    }
+
     public subscribe(destination: string, resolve: (message?: Message) => void): void {
         if (!this.stompClient || !this.stompClient.connected) {
-            console.warn('WS is not connected!!')
+            this.pendingSubscribers.set(destination, resolve)
+            console.warn('WS is not connected!!', this.pendingSubscribers)
             return;
         }
 
@@ -66,10 +75,17 @@ export class SockJs {
 
 
     private onConnected(frame?: Frame): void {
+        for (const iterator of this.pendingSubscribers) {
+            const destination = iterator[0];
+            const resolve = iterator[1];
+            this.subscribe(destination, resolve);
+            this.pendingSubscribers.delete(destination);
+        }
         console.log('Connected: ' + frame);
     }
 
     private onError(frame: Frame | string): void {
         console.warn('Error: ' + frame);
+        setTimeout(() => this.init(), 10000);
     }
 }
