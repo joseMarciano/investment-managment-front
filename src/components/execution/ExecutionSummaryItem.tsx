@@ -5,7 +5,7 @@ import { ExecutionAggregateType } from '../../model-types/ExecutionTypes';
 import { MoneyFormatter } from '../../utils/MoneyFormatter';
 import { Link, useParams } from 'react-router-dom';
 import { SockJs } from '../../config/websocket/WebSocket';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Message } from 'stompjs';
 
 type ExecutionSummaryItemProps = {
@@ -23,30 +23,10 @@ const PNL_OPEN_TOTALIZATOR_TOPIC = (walletId: string, stockId: string) => `/clie
 const LAST_TRADE_PRICE_TOPIC = (symbol: string) => `/client/user-id/${symbol}/last-trade-price`
 
 
-export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary, executionsSummary }: ExecutionSummaryItemProps) {
-    const currentExecutionSummary = useRef(executionsSummary);
+export function ExecutionSummaryItem({ executionAggregate }: ExecutionSummaryItemProps) {
     const socket = useMemo(() => SockJs.getInstance(), []);
-    const { responsiveStatus: { isLarge } } = useApplicationContext()
+    const { responsiveStatus: { isLarge } } = useApplicationContext();
     const { walletId } = useParams();
-
-
-
-    // function updatePnlExecution(message: Message | undefined) {
-    //     const exec = currentExecutionSummary.current;
-    //     const body = JSON.parse(message?.body || '');
-    //     const executionsUpdated = exec.map(it => {
-    //         const stockId = (body?.id as string).split(':')[1];
-    //         if (it.stockId !== stockId) return it;
-
-    //         it.totalPnlOpen = body?.pnlOpen || 0;;
-    //         return it;
-    //     })
-
-    //     setExecutionsSummary([...executionsUpdated])
-    // }
-
-
-
 
     return <Link to={`/executions/${walletId}/${executionAggregate.stockId}`} state={{ symbol: executionAggregate.symbol }}>
         <Box _hover={{ filter: 'brightness(135%)' }} cursor={'pointer'} mt={2} display='flex' flexDir={isLarge ? 'row' : 'column'} justifyContent={isLarge ? 'space-between' : ''} fontSize='sm' fontWeight='medium' borderRadius={8} p={3} bgColor={'gray.700'}>
@@ -55,7 +35,6 @@ export function ExecutionSummaryItem({ executionAggregate, setExecutionsSummary,
                 <Text> {executionAggregate.totalCustodyQuantity} cotas</Text>
             </HStack>
             <PnlOpenWebSocketWrapper value={executionAggregate.totalPnlOpen} />
-            {/* <CurrencyValue label={'Pnl aberto'} value={executionAggregate.totalPnlOpen || 0} /> */}
             <CurrencyValue label={'Pnl fechado'} value={executionAggregate.totalPnlClose || 0} />
             <LastTradePriceWebSocketWrapper />
         </Box>
