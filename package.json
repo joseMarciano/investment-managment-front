@@ -23,7 +23,6 @@
     "date-fns": "2.29.3",
     "dayzed": "3.2.3",
     "framer-motion": "10.0.0",
-    "gh-pages": "^5.0.0",
     "net": "1.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
