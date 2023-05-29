@@ -39,51 +39,6 @@ export function ExecutionPage() {
 
     const { responsiveStatus: { isLarge } } = useApplicationContext();
     const { isLoading, searchExecutions, deleteExecution, findExecutionById, executions, setExecutions, searchExecutionsTotalizator, executionsTotalizator, setExecutionsTotalizator } = useExecutionContext();
-    // const currentExecutions = useRef(executions);
-    // const currentTotalizator = useRef(executionsTotalizator);
-
-    // useEffect(() => {
-    //     hasSubscribers()
-
-    //     return () => {
-    //         socket.unsubscribe(PNL_OPEN_TOPIC)
-    //         socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string))
-    //     }
-    // }, []);
-
-
-    // useEffect(() => {
-    //     currentExecutions.current = executions;
-    //     currentTotalizator.current = executionsTotalizator;
-    // }, [executions, executionsTotalizator])
-
-    // function hasSubscribers() {
-    //     socket.subscribe(PNL_OPEN_TOPIC, updatePnlExecution);
-    //     socket.subscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string), updatePnlTotalizatorExecution);
-    // }
-
-    // function updatePnlExecution(message: Message | undefined) {
-    //     const exec = currentExecutions.current;
-    //     const body = JSON.parse(message?.body || '');
-    //     const executionsUpdated = exec.map(it => {
-    //         if (it.id !== body?.executionID) return it;
-
-    //         it.pnlOpen = body?.pnl || 0;;
-    //         return it;
-    //     })
-
-    //     setExecutions([...executionsUpdated])
-    // }
-
-
-    // function updatePnlTotalizatorExecution(message: Message | undefined) {
-    //     const body = JSON.parse(message?.body || '');
-
-    //     setExecutionsTotalizator({
-    //         ...currentTotalizator.current,
-    //         totalPnlOpen: body?.pnlOpen || 0
-    //     })
-    // }
 
 
     return <Box>
