@@ -25,6 +25,7 @@ export type ExecutionPageItem = {
     executedVolume: number,
     pnlOpen: number,
     pnlClose: number,
+    pnlClosePercentage: number,
     status: string,
     executedAt: string,
     createdAt: string,

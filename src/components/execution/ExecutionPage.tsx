@@ -1,4 +1,4 @@
-import { Box, Button, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Stat, StatArrow, StatGroup, StatHelpText, StatLabel, StatNumber, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react';
+import { Box, Button, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Stat, StatArrow, StatGroup, StatLabel, StatNumber, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, VStack } from '@chakra-ui/react';
 import { SearchCommons } from '../commons/search/SearchCommons';
 import { TitlePage } from '../commons/title-page/TitlePage';
 import { useApplicationContext } from '../commons/application/context/ApplicationContext';
@@ -9,32 +9,33 @@ import { ExecutionPageItem } from '../../model-types/ExecutionTypes';
 import { DateFormatter } from '../../utils/DateFormatter';
 import { BsCurrencyExchange } from 'react-icons/bs';
 import { AiOutlineEdit, AiOutlineShoppingCart } from 'react-icons/ai';
-import { HiDotsVertical } from 'react-icons/hi'
-import { MdAttachMoney, MdDeleteForever } from 'react-icons/md'
+import { HiDotsVertical } from 'react-icons/hi';
+import { MdAttachMoney, MdDeleteForever } from 'react-icons/md';
 import { MoneyFormatter } from '../../utils/MoneyFormatter';
+import { PercentageFormatter } from '../../utils/PercentageFormatter';
 import { DEFAULT_STYLES } from '../../config/styles/theme';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SockJs } from '../../config/websocket/WebSocket';
 import { Message } from 'stompjs';
 import { TriangleDownIcon, TriangleUpIcon, } from '@chakra-ui/icons';
 import { BsDashCircleFill } from 'react-icons/bs';
 
 const PNL_OPEN_TOPIC = (executionId: string) => `/client/user-id/${executionId}/pnl-open`;
-const PNL_OPEN_TOTALIZATOR_TOPIC = (walletId: string, stockId: string) => `/client/user-id/${walletId}/${stockId}/pnl-open-totalizator`
+const PNL_OPEN_TOTALIZATOR_TOPIC = (walletId: string, stockId: string) => `/client/user-id/${walletId}/${stockId}/pnl-open-totalizator`;
 
 type ExecutionRowProps = {
-    execution: ExecutionPageItem
-}
+    execution: ExecutionPageItem;
+};
 
 type MenuRowProps = {
-    execution: ExecutionPageItem
-}
+    execution: ExecutionPageItem;
+};
 
 export function ExecutionPage() {
     const { state } = useLocation();
     const navigate = useNavigate();
     const { stockId, walletId } = useParams();
-    const symbol = useMemo(() => state?.symbol, [])
+    const symbol = useMemo(() => state?.symbol, []);
     const socket = useMemo(() => SockJs.getInstance(), []);
 
     const { responsiveStatus: { isLarge } } = useApplicationContext();
@@ -57,7 +58,7 @@ export function ExecutionPage() {
                     </Stat>
                     <Stat>
                         <StatLabel>PnL total aberto</StatLabel>
-                        <PnlOpenTotalizatorWebSocketWrapper value={executionsTotalizator?.totalPnlOpen || 0}/>
+                        <PnlOpenTotalizatorWebSocketWrapper value={executionsTotalizator?.totalPnlOpen || 0} />
                     </Stat>
                     <Stat>
                         <StatLabel>PnL total fechado</StatLabel>
@@ -96,7 +97,7 @@ export function ExecutionPage() {
                 </TableContainer>}
             </Box>
         </VStack>
-    </Box>
+    </Box>;
 
     function ExecutionColumns() {
         return <Tr>
@@ -104,52 +105,56 @@ export function ExecutionPage() {
             <Th textAlign='center'>Pnl Aberto(R$)</Th>
             <Th textAlign='center'>Pnl Fechado(R$)</Th>
             <Th textAlign='center'>Qnt. compra/venda</Th>
-            <Th textAlign='center'>Param. lucro(%)</Th>
+            {/* <Th textAlign='center'>Param. lucro(%)</Th> */}
             <Th textAlign='center'>Data de compra/venda</Th>
             <Th textAlign='center'></Th>
-        </Tr>
+        </Tr>;
     }
 
     function ExecutionRow({ execution }: ExecutionRowProps) {
 
-        const TdItem = ({ value }: { value: string | number | null }) => <Td textAlign='center'>{value}</Td>
+        const TdItem = ({ value }: { value: string | number | null; }) => <Td textAlign='center'>{value}</Td>;
 
         return <Tr>
-            <Td>{execution.status === 'BUY' ? <AiOutlineShoppingCart /> : <MdAttachMoney />}</Td>
-            <PnlOpenWebSocketWrapper execution={execution}/> 
-            <PnlRow pnl={execution.pnlClose || 0} />
+            <Td><HStack justifyContent={'center'}>{execution.status === 'BUY' ? <AiOutlineShoppingCart/> : <MdAttachMoney />}</HStack></Td>
+            <PnlOpenWebSocketWrapper execution={execution} />
+            <PnlRow pnl={execution.pnlClose || 0} pnlPercengate={execution.pnlClosePercentage} />
             <TdItem value={execution.executedQuantity} />
-            <TdItem value={execution.profitPercentage} />
+            {/* <TdItem value={execution.profitPercentage} /> */}
             <TdItem value={DateFormatter.format(execution.executedAt)} />
             <Td textAlign='center'><MenuRow execution={execution} /></Td>
-        </Tr>
+        </Tr>;
     }
 
-    function PnlRow({ pnl }: { pnl: number }) {
+    function PnlRow({ pnl, pnlPercengate }: { pnl: number, pnlPercengate: number; }) {
         return <Td textAlign='center'>
-            <HStack alignItems='center'>
-                <Text>{MoneyFormatter.shortBRL(pnl)}  </Text>
+            <HStack justifyContent={'center'}>
+                <Tooltip label={MoneyFormatter.shortBRL(pnl)}>
+                    <Text>{PercentageFormatter.format(pnlPercengate)}  </Text>
+                </Tooltip>
                 {pnl > 0 && <TriangleUpIcon alignSelf='flex-end' color='green.400' />}
                 {pnl < 0 && <TriangleDownIcon alignSelf='flex-end' color='red.400' />}
                 {pnl === 0 && <BsDashCircleFill />}
             </HStack>
-        </Td>
+        </Td>;
     }
 
     function PnlOpenWebSocketWrapper({ execution }: any) {
         const [pnlOpen, setPnlOpen] = useState(execution.pnlOpen);
+        const [pnlOpenPercentage, setPnlOpenPercentage] = useState(execution.pnlOpenPercentage);
 
         useEffect(() => {
-            subscribe()
+            subscribe();
 
             return () => {
-                socket.unsubscribe(PNL_OPEN_TOPIC(execution.id as string))
-            }
+                socket.unsubscribe(PNL_OPEN_TOPIC(execution.id as string));
+            };
         }, []);
 
         useEffect(() => {
             setPnlOpen(pnlOpen);
-        }, [execution.pnlOpen])
+            setPnlOpenPercentage(pnlOpenPercentage);
+        }, [execution.pnlOpen, execution.pnlOpenPercentage]);
 
 
 
@@ -159,10 +164,11 @@ export function ExecutionPage() {
 
         function updatePnlExecution(message: Message | undefined) {
             const body = JSON.parse(message?.body || '');
-            setPnlOpen(body?.pnl || 0)
+            setPnlOpen(body?.pnl || 0);
+            setPnlOpenPercentage(body?.pnlOpenPercentage || 0);
         }
 
-        return <PnlRow pnl={pnlOpen || 0} />
+        return <PnlRow pnl={pnlOpen || 0} pnlPercengate={pnlOpenPercentage} />;
     }
 
 
@@ -170,16 +176,16 @@ export function ExecutionPage() {
         const [pnlOpenTotalizator, setPnlOpenTotalizator] = useState(value);
 
         useEffect(() => {
-            subscribe()
+            subscribe();
 
             return () => {
-                socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string))
-            }
+                socket.unsubscribe(PNL_OPEN_TOTALIZATOR_TOPIC(walletId as string, stockId as string));
+            };
         }, []);
 
         useEffect(() => {
             setPnlOpenTotalizator(pnlOpenTotalizator);
-        }, [value])
+        }, [value]);
 
 
 
@@ -189,14 +195,14 @@ export function ExecutionPage() {
 
         function updatePnlExecution(message: Message | undefined) {
             const body = JSON.parse(message?.body || '');
-            setPnlOpenTotalizator(body?.pnlOpen || 0)
+            setPnlOpenTotalizator(body?.pnlOpen || 0);
         }
 
         return <StatNumber>
             {MoneyFormatter.shortBRL(pnlOpenTotalizator || 0)}
             {pnlOpenTotalizator >= 0 && <StatArrow type='increase' />}
             {pnlOpenTotalizator <= 0 && <StatArrow type='decrease' />}
-        </StatNumber>
+        </StatNumber>;
     }
 
 
@@ -216,7 +222,7 @@ export function ExecutionPage() {
                                 label: symbol
                             }
                         }
-                    })
+                    });
                 }
             },
             {
@@ -233,7 +239,7 @@ export function ExecutionPage() {
                                 label: symbol
                             }
                         }
-                    })
+                    });
                 }
             },
             {
@@ -244,7 +250,7 @@ export function ExecutionPage() {
                     deleteExecution(execution.id).then(searchExecutionsTotalizator);
                 }
             },
-        ], [])
+        ], []);
 
         return <Menu size='sm' >
             <MenuButton
@@ -260,10 +266,10 @@ export function ExecutionPage() {
                     if ((it.key === 'SELL' && execution.status === 'SELL') || (execution.executedQuantity === 0 && it.key === 'SELL')) return null;
                     return <MenuItem onClick={it.onClick} key={it.key} _hover={{ filter: 'brightness(135%)' }} bg={'inherit'} icon={<it.icon />}>
                         {it.label}
-                    </MenuItem>
+                    </MenuItem>;
 
                 })}
             </MenuList>
-        </Menu>
+        </Menu>;
     }
 }
