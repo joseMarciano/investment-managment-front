@@ -58,7 +58,7 @@ export function MenuContextProvider({ children }: MenuContextProviderProps) {
                 key: 'STOCK_RADAR',
                 description: "Radar de ativos",
                 icon: AiOutlineEye,
-                route: '/',
+                route: '/stocks-radar',
                 onClick: function () {
                     setSelectedButton(this.key);
                 }

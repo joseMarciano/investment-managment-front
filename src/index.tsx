@@ -16,9 +16,9 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <ChakraProvider theme={theme}>
       <Root />
     </ChakraProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

@@ -4,6 +4,7 @@ import { AiOutlineEdit } from 'react-icons/ai';
 import { HiDotsVertical } from 'react-icons/hi';
 import { MdDeleteForever } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
+import { CartesianGrid, Cell, Line, LineChart, Pie, PieChart, XAxis, YAxis } from 'recharts';
 import { DEFAULT_STYLES } from '../../config/styles/theme';
 import { CardEmptyList } from '../commons/card-empty-list/CardEmptyList';
 import { SearchCommons } from '../commons/search/SearchCommons';

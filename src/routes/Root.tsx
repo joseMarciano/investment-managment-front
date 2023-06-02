@@ -9,13 +9,14 @@ import { ApplicationContextProvider } from "../components/commons/application/co
 import ExecutionSummaryRouter from './executionsSummary/ExecutionSummaryRouter';
 import WalletRouter from './wallets/WalletRouter';
 import ExecutionRouter from './execution/ExecutionRouter';
+import StockRadarRouter from './stocksRadar/StockRadarRouter';
 
 
 const router = createBrowserRouter([
     {
         path: '/',
         element: <Main />,
-        children: [WalletRouter, ExecutionSummaryRouter, ExecutionRouter]
+        children: [WalletRouter, ExecutionSummaryRouter, ExecutionRouter, StockRadarRouter]
     }
 ])
 
