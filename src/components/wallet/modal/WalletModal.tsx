@@ -78,7 +78,6 @@ export function WalletModal() {
 	}
 
 	function onSubmit(data: any): any {
-		debugger
 		setIsLoading(true)
 		let promise;
 

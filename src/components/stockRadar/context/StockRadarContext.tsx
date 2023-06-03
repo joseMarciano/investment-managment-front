@@ -36,17 +36,15 @@ export function StockRadarContextProvider({ children }: StockRadarContextProvide
 
     async function searchStockRadars() {
         getStockRadars('get-high')
-            .then(({ results }) => {
-                debugger;
-                setLowPricesStocks(Object.keys(results).map(buildStocksPrices(results)));
+            .then(({ data: { results } }) => {
+                setHighPricesStocks(Object.keys(results).map(buildStocksPrices(results)));
             })
             .catch((e) => console.error('Error on fetch StockRadars high', e))
             .finally(() => setIsLoading(false));
 
         getStockRadars('get-low')
-            .then(({ results }) => {
-                debugger;
-                setHighPricesStocks(Object.keys(results).map(buildStocksPrices(results)));
+            .then(({ data: { results } }) => {
+                setLowPricesStocks(Object.keys(results).map(buildStocksPrices(results)));
             })
             .catch((e) => console.error('Error on fetch StockRadars low', e))
             .finally(() => setIsLoading(false));
@@ -309,7 +307,8 @@ export function StockRadarContextProvider({ children }: StockRadarContextProvide
             return await http.get(`${baseUrl.current}/finance/stock_price`, {
                 params: {
                     key: token.current,
-                    symbol: type
+                    symbol: type,
+                    format: 'json-cors'
                 }
             });
         } catch (error) {

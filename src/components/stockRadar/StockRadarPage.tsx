@@ -9,7 +9,6 @@ import { PercentageFormatter } from '../../utils/PercentageFormatter';
 
 export function StockRadarPage() {
     const { lowPricesStocks, highPricesStocks } = useStockRadarContext();
-    debugger;
     return <Box>
         <HStack m={5}>
             <Box width='400px' p={5}>
@@ -25,7 +24,6 @@ export function StockRadarPage() {
 
 
     function StockInformation({ stocks = [], type }: any) {
-        debugger;
         return <VStack padding={4} alignItems='flex-start' width='100%'>
             {stocks.map((it: any) => (<HStack key={it.symbol}>
                 <Image height={'50px'} src={it.logo} />
