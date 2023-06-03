@@ -1,7 +1,7 @@
-import { Box, Button, Icon } from "@chakra-ui/react"
-import { GiHamburgerMenu } from "react-icons/gi"
-import { useMenuContext } from "./context/MenuContext"
-import { Link } from "react-router-dom"
+import { Badge, Box, Button, Icon } from "@chakra-ui/react";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { useMenuContext } from "./context/MenuContext";
+import { Link } from "react-router-dom";
 
 
 export function MenuButtons() {
@@ -14,14 +14,20 @@ export function MenuButtons() {
 
     function CompleteMenuButtons() {
         return <>
-            {MENU_BUTTONS.map(button => (<Box  key={button.key} color={getColor(button.key)} >
+            {MENU_BUTTONS.map(button => (<Box key={button.key} color={getColor(button.key)} >
                 <Link key={button.key} to={button.route}>
                     <Button leftIcon={<button.icon />} alignSelf={'flex-start'} variant={"unstyled"} border={"none"} size="md" bg="none" onClick={button.onClick.bind(button)}>
                         {button.description}
                     </Button>
+                    {
+                        (button.key === 'NEWS' || button.key === 'SETTINGS') && 
+                        <Badge ml='1' fontSize='xx-small' variant='subtle' colorScheme='orange'>
+                            Em breve!
+                        </Badge>
+                    }
                 </Link>
             </Box>))}
-        </>
+        </>;
     }
 
     function SoftMenuButtons() {
@@ -39,7 +45,7 @@ export function MenuButtons() {
     }
 
     function getColor(key: string): string {
-        return selectedButton === key ? '#007AFF' : ''
+        return selectedButton === key ? '#007AFF' : '';
     }
 
 
